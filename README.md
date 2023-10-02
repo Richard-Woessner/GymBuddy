@@ -1,14 +1,16 @@
 # GymBuddy
 
 
-### This is the repository for GymBuddy, the best way to get you connected to a trainer.
+## This is the repository for GymBuddy, the best way to get you connected to a trainer.
 
-Installation:
+### Installation:
+
 ```
   npm i
 ```
+
   
-To Run: 
+### To Run: 
 ```
   // We are using Expo a RN toolset
   npx expo
