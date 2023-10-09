@@ -27,6 +27,7 @@ export default function TabLayout() {
         options={{
           title: 'profile title',
           tabBarIcon: ({ color }) => <TabBarIcon name="person-outline" color={color} />,
+          headerShown: false,
         }}
       />
       <Tabs.Screen
@@ -34,6 +35,7 @@ export default function TabLayout() {
         options={{
           title: 'logs title',
           tabBarIcon: ({ color }) => <TabBarIcon name="book-outline" color={color} />,
+          headerShown: false,
         }}
       />
       <Tabs.Screen //THIS IS JUST FOR FLAVOR, ANY TSX FILE IN TABS WILL CREATE A TAB
@@ -41,20 +43,21 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color }) => <TabBarIcon name="home-outline" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? 'light'].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
-          ),
+          headerShown: false,
+          // headerRight: () => (
+          //   <Link href="/modal" asChild>
+          //     <Pressable>
+          //       {({ pressed }) => (
+          //         <FontAwesome
+          //           name="info-circle"
+          //           size={25}
+          //           color={Colors[colorScheme ?? 'light'].text}
+          //           style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
+          //         />
+          //       )}
+          //     </Pressable>
+          //   </Link>
+          // ),
         }}
       />
       <Tabs.Screen
@@ -62,6 +65,7 @@ export default function TabLayout() {
         options={{
           title: 'trainer',
           tabBarIcon: ({ color }) => <TabBarIcon name="person-add-outline" color={color} />,
+          headerShown: false,
         }}
       />
       <Tabs.Screen
@@ -69,6 +73,7 @@ export default function TabLayout() {
         options={{
           title: 'messages',
           tabBarIcon: ({ color }) => <TabBarIcon name="chatbubbles-outline" color={color} />,
+          headerShown: false,
         }}
       />
     </Tabs>
