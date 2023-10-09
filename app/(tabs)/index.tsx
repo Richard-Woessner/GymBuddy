@@ -1,15 +1,15 @@
 import { StyleSheet } from 'react-native';
 
 import { Text, View } from '../../components/Themed';
-import Card from '../../components/home/HomeCard';
 import { FlatList } from 'react-native-gesture-handler';
+import HomeCard from '../../components/home/HomeCard';
 
 export default function TabOneScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Home</Text>
       <View style={styles.scrollArea}>
-        <Card />
+        <HomeCard />
       </View>
     </View>
   );

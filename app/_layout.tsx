@@ -43,6 +43,7 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
+  // Use the device color scheme to set the theme context.
   const colorScheme = useColorScheme();
 
   return (
@@ -50,7 +51,10 @@ function RootLayoutNav() {
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="workout" options={{ presentation: 'fullScreenModal' }} />
+        <Stack.Screen
+          name="workout"
+          options={{ presentation: 'fullScreenModal', headerShown: true }}
+        />
       </Stack>
     </ThemeProvider>
   );
