@@ -1,16 +1,18 @@
 import { StyleSheet } from 'react-native';
 
 import { Text, View } from '../../components/Themed';
-import { FlatList } from 'react-native-gesture-handler';
+import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import HomeCard from '../../components/home/HomeCard';
 
 export default function TabOneScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Home</Text>
-      <View style={styles.scrollArea}>
-        <HomeCard />
-      </View>
+      <ScrollView style={styles.scrollView} contentContainerStyle={{ flexGrow: 1 }}>
+        {[...Array(50)].map((_, i) => {
+          return <HomeCard key={i} />;
+        })}
+      </ScrollView>
     </View>
   );
 }
@@ -31,9 +33,10 @@ const styles = StyleSheet.create({
     height: 1,
     width: '80%',
   },
-  scrollArea: {
-    flex: 1,
+  scrollView: {
+    flexGrow: 1,
     width: '100%',
-    flexDirection: 'row',
+    // flexDirection: 'column',
+    gap: 20,
   },
 });
