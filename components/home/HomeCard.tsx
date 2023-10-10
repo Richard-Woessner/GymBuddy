@@ -18,12 +18,12 @@ const HomeCard = (props: CardProps) => {
 
 const styles = StyleSheet.create({
   card: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
     backgroundColor: 'red',
     height: 100,
     padding: 10,
+    marginBottom: 2,
   },
 });
 
