@@ -12,10 +12,10 @@ export default function Profile() {
       <Text style={styles.title}>{dummydata.name}</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <View style={styles.userInfo}>
-        {Object.entries(dummydata.info).map((info) => {
+        {Object.entries(dummydata.info).map((info, i) => {
           const [key, value] = info;
           return (
-            <View style={styles.userInfoRow}>
+            <View style={styles.userInfoRow} key={i}>
               <Key text={key} />
               <Stat text={value.toString()} edit={edit} />
             </View>
