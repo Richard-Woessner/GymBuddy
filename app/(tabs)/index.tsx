@@ -13,6 +13,7 @@ import DrawerCard from '../../components/DrawerCards';
 import { Link } from 'expo-router';
 import WorkoutCard from '../../components/home/WorkoutCard';
 import StartWorkoutButton from '../../components/home/StartWorkoutButton';
+import { userService } from '../../services/usersService';
 
 export default function TabOneScreen() {
   const [startWorkoutDrawerOpen, setstartWorkoutDrawerOpen] = useState(false);
@@ -20,6 +21,12 @@ export default function TabOneScreen() {
 
   const translateYStart = useRef(new Animated.Value(300)).current;
   const translateYWorkout = useRef(new Animated.Value(300)).current;
+
+  console.log();
+
+  userService.postUsers().then((res) => {
+    console.log(res);
+  });
 
   return (
     <View style={styles.container}>
