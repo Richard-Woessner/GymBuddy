@@ -4,6 +4,7 @@ import { Button, StyleSheet } from 'react-native';
 import Colors from '../constants/Colors';
 
 const Workout = () => {
+  
   return (
     <View style={styles.container}>
       <Text>Workout</Text>
@@ -16,7 +17,9 @@ const Workout = () => {
       <Button title="Add Exersize" onPress={() => {}} />
     </View>
   );
+  
 };
+
 
 const styles = StyleSheet.create({
   container: {

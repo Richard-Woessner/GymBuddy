@@ -8,11 +8,11 @@ export default function TabOneScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Home</Text>
-      <ScrollView style={styles.scrollView} contentContainerStyle={{ flexGrow: 1 }}>
-        {[...Array(50)].map((_, i) => {
-          return <HomeCard key={i} />;
-        })}
-      </ScrollView>
+     
+       {
+          <HomeCard />
+       };
+     
     </View>
   );
 }
