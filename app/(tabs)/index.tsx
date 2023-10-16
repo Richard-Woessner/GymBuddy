@@ -8,11 +8,7 @@ export default function TabOneScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Home</Text>
-     
-       {
-          <HomeCard />
-       };
-     
+      {<HomeCard />};
     </View>
   );
 }
