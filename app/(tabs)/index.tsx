@@ -7,14 +7,14 @@ import {
 } from 'react-native';
 
 import { Text, View } from '../../components/Themed';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import Button from '../../components/Button';
 import DrawerCard from '../../components/DrawerCards';
 import { Link } from 'expo-router';
 import WorkoutCard from '../../components/home/WorkoutCard';
 import StartWorkoutButton from '../../components/home/StartWorkoutButton';
 import { userService } from '../../services/usersService';
-import { workoutService } from '../../services/workoutService';
+import { Workout, workoutService } from '../../services/workoutService';
 
 export default function TabOneScreen() {
   const [startWorkoutDrawerOpen, setstartWorkoutDrawerOpen] = useState(false);
@@ -23,13 +23,15 @@ export default function TabOneScreen() {
   const translateYStart = useRef(new Animated.Value(300)).current;
   const translateYWorkout = useRef(new Animated.Value(300)).current;
 
+  const [workouts, setWorkouts] = useState<Workout[]>([]);
   console.log();
 
-  workoutService.getWorkouts().then((res) => {
-    console.log('test');
-
-    console.log(res);
-  });
+  useEffect(() => {
+    workoutService.getWorkouts().then((res) => {
+      console.log(res);
+      setWorkouts(res.Workouts);
+    });
+  }, []);
 
   return (
     <View style={styles.container}>
