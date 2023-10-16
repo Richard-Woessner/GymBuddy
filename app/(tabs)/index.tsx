@@ -24,7 +24,6 @@ export default function TabOneScreen() {
   const translateYWorkout = useRef(new Animated.Value(300)).current;
 
   const [workouts, setWorkouts] = useState<Workout[]>([]);
-  console.log();
 
   useEffect(() => {
     workoutService.getWorkouts().then((res) => {
