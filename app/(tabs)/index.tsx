@@ -14,6 +14,7 @@ import { Link } from 'expo-router';
 import WorkoutCard from '../../components/home/WorkoutCard';
 import StartWorkoutButton from '../../components/home/StartWorkoutButton';
 import { userService } from '../../services/usersService';
+import { workoutService } from '../../services/workoutService';
 
 export default function TabOneScreen() {
   const [startWorkoutDrawerOpen, setstartWorkoutDrawerOpen] = useState(false);
@@ -24,7 +25,9 @@ export default function TabOneScreen() {
 
   console.log();
 
-  userService.postUsers().then((res) => {
+  workoutService.getWorkouts().then((res) => {
+    console.log('test');
+
     console.log(res);
   });
 
