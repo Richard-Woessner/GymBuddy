@@ -6,7 +6,6 @@ export default function Profile() {
   const [messages, setMessages] = useState<string[]>([]);
   const [text, setText] = useState<string>('');
 
-
   const handleSend = () => {
     if (text.trim() !== '') {
       setMessages([...messages, text]);
@@ -22,7 +21,9 @@ export default function Profile() {
       {/* Display Messages */}
       <ScrollView style={styles.messageContainer}>
         {messages.map((message, index) => (
-          <Text key={index} style={styles.messageText}>{message}</Text>
+          <Text key={index} style={styles.messageText}>
+            {message}
+          </Text>
         ))}
       </ScrollView>
 
