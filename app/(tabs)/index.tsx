@@ -1,6 +1,5 @@
 import {
   Animated,
-  Modal,
   PanResponder,
   PanResponderGestureState,
   Pressable,
@@ -8,66 +7,19 @@ import {
 } from 'react-native';
 
 import { Text, View } from '../../components/Themed';
-import { FlatList, ScrollView } from 'react-native-gesture-handler';
-import HomeCard from '../../components/home/HomeCard';
 import { useRef, useState } from 'react';
 import Button from '../../components/Button';
 import DrawerCard from '../../components/DrawerCards';
 import { Link } from 'expo-router';
+import WorkoutCard from '../../components/home/WorkoutCard';
+import StartWorkoutButton from '../../components/home/StartWorkoutButton';
 
 export default function TabOneScreen() {
-  const [isStartPopupVisible, setStartPopupVisible] = useState(false);
-  const [isWorkoutPopupVisible, setWorkoutPopupVisible] = useState(false);
+  const [startWorkoutDrawerOpen, setstartWorkoutDrawerOpen] = useState(false);
+  const [workoutCardOpen, setWorkoutCardOpen] = useState(false);
 
   const translateYStart = useRef(new Animated.Value(300)).current;
   const translateYWorkout = useRef(new Animated.Value(300)).current;
-
-  const openStartPopup = () => {
-    setStartPopupVisible(true);
-    Animated.spring(translateYStart, {
-      toValue: 0,
-      useNativeDriver: false,
-    }).start();
-  };
-
-  const openWorkoutPopup = () => {
-    setWorkoutPopupVisible(true);
-    Animated.spring(translateYWorkout, {
-      toValue: 0,
-      useNativeDriver: false,
-    }).start();
-  };
-
-  const closeWorkoutPopup = () => {
-    Animated.spring(translateYWorkout, {
-      toValue: 300,
-      useNativeDriver: false,
-    }).start(() => setWorkoutPopupVisible(false));
-  };
-
-  const onPanResponderReleaseWorkout = (e: any, gestureState: PanResponderGestureState) => {
-    if (gestureState.dy > 50) {
-      Animated.timing(translateYWorkout, {
-        toValue: 300,
-        duration: 100,
-        useNativeDriver: false,
-      }).start(() => closeWorkoutPopup());
-    } else {
-      Animated.spring(translateYWorkout, {
-        toValue: 0,
-        useNativeDriver: false,
-      }).start();
-    }
-  };
-
-  const panResponderWorkout = PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
-    onMoveShouldSetPanResponder: () => true,
-    onPanResponderMove: Animated.event([null, { dy: translateYWorkout }], {
-      useNativeDriver: false,
-    }),
-    onPanResponderRelease: onPanResponderReleaseWorkout,
-  });
 
   return (
     <View style={styles.container}>
@@ -76,52 +28,29 @@ export default function TabOneScreen() {
       <Button
         buttonStyle={styles.buttonStyle}
         buttonText="Start a workout"
-        onPress={() => setStartPopupVisible(!isStartPopupVisible)}
+        onPress={() => setstartWorkoutDrawerOpen(!startWorkoutDrawerOpen)}
         translateYStart={translateYStart}
       />
       <Button
         buttonStyle={styles.workoutbuttonStyle}
         buttonText="Create a workout"
         onPress={() => {
-          setWorkoutPopupVisible(!isWorkoutPopupVisible);
+          setWorkoutCardOpen(!workoutCardOpen);
         }}
         translateYStart={translateYWorkout}
       />
 
-      {/* <HomeCard /> */}
-
-      <DrawerCard
+      <StartWorkoutButton
+        open={startWorkoutDrawerOpen}
+        setOpen={setstartWorkoutDrawerOpen}
         translateYStart={translateYStart}
-        openPopup={isStartPopupVisible}
-        setOpenPopup={setStartPopupVisible}
-        animationType="slide"
-        style={styles.popupContainer}
-      >
-        <>
-          <Text>Start Popup Content</Text>
-          {/* TODO REPLACE WITH CLOSESTARTPOPUP */}
-          <Pressable style={styles.buttonStyle} onPress={() => setStartPopupVisible(false)}>
-            <Text>Close Popup</Text>
-          </Pressable>
-        </>
-      </DrawerCard>
+      />
 
-      <DrawerCard
+      <WorkoutCard
+        open={workoutCardOpen}
+        setOpen={setWorkoutCardOpen}
         translateYStart={translateYWorkout}
-        openPopup={isWorkoutPopupVisible}
-        setOpenPopup={setWorkoutPopupVisible}
-        animationType="fade"
-        style={styles.workoutpopupContainer}
-      >
-        <>
-          <Text>Workout Popup Content</Text>
-          <Link href="/workout">
-            <Pressable onPress={() => console.log('pressed')}>
-              <Text style={styles.buttonStyle}>Edit</Text>
-            </Pressable>
-          </Link>
-        </>
-      </DrawerCard>
+      />
     </View>
   );
 }
@@ -155,18 +84,7 @@ const styles = StyleSheet.create({
     margin: 5,
     alignItems: 'center',
   },
-  popupContainer: {
-    flex: 1,
-    width: '100%',
-    backgroundColor: 'black',
-    borderTopEndRadius: 15,
-    borderTopStartRadius: 15,
-    border: '2px solid white',
-    borderBottomColor: 'black',
-    padding: 20,
-    alignItems: 'center',
-    marginTop: 70,
-  },
+
   workoutbuttonStyle: {
     borderRadius: 10,
     backgroundColor: 'transparent',

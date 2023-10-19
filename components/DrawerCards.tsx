@@ -22,7 +22,7 @@ export const DrawerCard = (props: DrawerCardProps) => {
 
   const closeStartPopup = () => {
     Animated.spring(translateYStart, {
-      toValue: 400,
+      toValue: 300,
       useNativeDriver: false,
     }).start(() => setOpenPopup(false));
   };
