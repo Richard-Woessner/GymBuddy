@@ -3,15 +3,21 @@ import { View, Text } from '../Themed';
 import DrawerCard from '../DrawerCards';
 import { useRef, useState } from 'react';
 import { Link } from 'expo-router';
+import { Workout } from '../../services/workoutService';
 
 interface WorkoutCardProps {
   open: boolean;
   setOpen: (value: boolean) => void;
   translateYStart: Animated.Value;
+  workout: Workout;
 }
 
 const WorkoutCard = (props: WorkoutCardProps) => {
-  const { open, setOpen, translateYStart } = props;
+  const { open, setOpen, translateYStart, workout } = props;
+
+  if (!workout) {
+    return null;
+  }
 
   return (
     <DrawerCard
@@ -22,12 +28,19 @@ const WorkoutCard = (props: WorkoutCardProps) => {
       style={styles.workoutpopupContainer}
     >
       <>
-        <Text>Workout Popup Content</Text>
+        <Text>{workout.Name}</Text>
         <Link href="/workout">
           <Pressable onPress={() => console.log('pressed')}>
-            <Text style={styles.buttonStyle}>Edit</Text>
+            <Text style={styles.buttonStyle}>Start</Text>
           </Pressable>
         </Link>
+
+        {workout.Exersizes.map((exersize, i) => (
+          <View style={styles.workoutRow}>
+            <Text key={i}>{exersize.Exersize}</Text>
+            <Text key={i}>{exersize.Sets.length} Sets</Text>
+          </View>
+        ))}
       </>
     </DrawerCard>
   );
@@ -52,6 +65,11 @@ const styles = StyleSheet.create({
     padding: 15,
     margin: 5,
     alignItems: 'center',
+  },
+  workoutRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
   },
 });
 

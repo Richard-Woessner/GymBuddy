@@ -1,3 +1,4 @@
+import { getWorkoutData } from '../test_data/getWorkoutData';
 import { AxiosService } from './axiosService';
 
 class WorkoutService extends AxiosService {
@@ -11,7 +12,7 @@ class WorkoutService extends AxiosService {
       return data;
     } catch (e) {
       console.error(e);
-      throw e;
+      return getWorkoutData as GetWorkoutResponse;
     }
   }
 }
