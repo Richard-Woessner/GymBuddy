@@ -1,36 +1,35 @@
-import {
-  Animated,
-  PanResponder,
-  PanResponderGestureState,
-  Pressable,
-  StyleSheet,
-} from 'react-native';
+import { Animated, StyleSheet } from 'react-native';
 
 import { Text, View } from '../../components/Themed';
 import { useRef, useState, useEffect } from 'react';
 import Button from '../../components/Button';
-import DrawerCard from '../../components/DrawerCards';
-import { Link } from 'expo-router';
 import WorkoutCard from '../../components/home/WorkoutCard';
 import StartWorkoutButton from '../../components/home/StartWorkoutButton';
-import { userService } from '../../services/usersService';
-import { Workout, workoutService } from '../../services/workoutService';
+import { useWorkouts } from '../../providers/workoutProvider';
 
 export default function TabOneScreen() {
+  const workoutsProvider = useWorkouts();
+  const { workouts } = workoutsProvider;
+
   const [startWorkoutDrawerOpen, setstartWorkoutDrawerOpen] = useState(false);
   const [workoutCardOpen, setWorkoutCardOpen] = useState(false);
 
   const translateYStart = useRef(new Animated.Value(300)).current;
   const translateYWorkout = useRef(new Animated.Value(300)).current;
 
-  const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [workout, setWorkout] = useState<number | null>(null);
+
+  const initData = async () => {
+    workoutsProvider.getWorkouts();
+  };
 
   useEffect(() => {
-    workoutService.getWorkouts().then((res) => {
-      console.log(res);
-      setWorkouts(res.Workouts);
-    });
+    initData();
   }, []);
+
+  if (!workouts) {
+    return null;
+  }
 
   return (
     <View style={styles.container}>
@@ -42,14 +41,19 @@ export default function TabOneScreen() {
         onPress={() => setstartWorkoutDrawerOpen(!startWorkoutDrawerOpen)}
         translateYStart={translateYStart}
       />
-      <Button
-        buttonStyle={styles.workoutbuttonStyle}
-        buttonText="Create a workout"
-        onPress={() => {
-          setWorkoutCardOpen(!workoutCardOpen);
-        }}
-        translateYStart={translateYWorkout}
-      />
+
+      {workouts.map((workout, i) => (
+        <Button
+          key={i}
+          buttonStyle={styles.workoutbuttonStyle}
+          buttonText={workout.Name}
+          onPress={() => {
+            setWorkoutCardOpen(!workoutCardOpen);
+            setWorkout(i);
+          }}
+          translateYStart={translateYWorkout}
+        />
+      ))}
 
       <StartWorkoutButton
         open={startWorkoutDrawerOpen}
@@ -61,6 +65,7 @@ export default function TabOneScreen() {
         open={workoutCardOpen}
         setOpen={setWorkoutCardOpen}
         translateYStart={translateYWorkout}
+        workout={workouts[workout || 0]}
       />
     </View>
   );
