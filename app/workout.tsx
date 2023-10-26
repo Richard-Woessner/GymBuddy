@@ -5,8 +5,9 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useWorkouts } from '../providers/workoutProvider';
 import { useEffect, useState } from 'react';
 import { useLogs } from '../providers/logsProvider';
+import { Workout } from '../services/workoutService';
 
-const Workout = () => {
+const WorkoutPage = () => {
   const workoutsProvider = useWorkouts();
   const logsProvider = useLogs();
   const { workouts } = workoutsProvider;
@@ -17,20 +18,7 @@ const Workout = () => {
   const workout = workouts?.find((workout) => workout.Id === id);
 
   const initData = async () => {
-    const checkboxes: ExersizeCheckBox[] = [];
-
-    workout?.Exersizes.forEach((exersize) => {
-      const woName = exersize.Exersize;
-      exersize.Sets.forEach((set, i) => {
-        checkboxes.push({
-          exersize: woName,
-          setNumber: i + 1,
-          checked: false,
-        });
-      });
-    });
-
-    console.log(checkboxes);
+    const checkboxes = workoutsToFormState(workout!);
 
     setCb(checkboxes);
   };
@@ -82,6 +70,23 @@ const Workout = () => {
   );
 };
 
+const workoutsToFormState = (workout: Workout) => {
+  const checkboxes: ExersizeCheckBox[] = [];
+
+  workout?.Exersizes.forEach((exersize) => {
+    const woName = exersize.Exersize;
+    exersize.Sets.forEach((set, i) => {
+      checkboxes.push({
+        exersize: woName,
+        setNumber: i + 1,
+        checked: false,
+      });
+    });
+  });
+
+  return checkboxes;
+};
+
 export interface ExersizeCheckBox {
   exersize: string;
   setNumber: number;
@@ -103,4 +108,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Workout;
+export default WorkoutPage;
