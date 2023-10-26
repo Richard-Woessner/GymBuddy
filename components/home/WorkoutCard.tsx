@@ -1,8 +1,7 @@
 import { Animated, Pressable, StyleSheet } from 'react-native';
 import { View, Text } from '../Themed';
 import DrawerCard from '../DrawerCards';
-import { useRef, useState } from 'react';
-import { Link } from 'expo-router';
+import { router } from 'expo-router';
 import { Workout } from '../../services/workoutService';
 
 interface WorkoutCardProps {
@@ -14,6 +13,11 @@ interface WorkoutCardProps {
 
 const WorkoutCard = (props: WorkoutCardProps) => {
   const { open, setOpen, translateYStart, workout } = props;
+
+  const redirectToWorkout = (workoutId: string) => {
+    setOpen(false);
+    router.push({ pathname: `/workout`, params: { id: workoutId } });
+  };
 
   if (!workout) {
     return null;
@@ -29,16 +33,14 @@ const WorkoutCard = (props: WorkoutCardProps) => {
     >
       <>
         <Text>{workout.Name}</Text>
-        <Link href="/workout">
-          <Pressable onPress={() => console.log('pressed')}>
-            <Text style={styles.buttonStyle}>Start</Text>
-          </Pressable>
-        </Link>
+        <Pressable onPress={() => redirectToWorkout(workout.Id)}>
+          <Text style={styles.buttonStyle}>Start</Text>
+        </Pressable>
 
         {workout.Exersizes.map((exersize, i) => (
-          <View style={styles.workoutRow}>
-            <Text key={i}>{exersize.Exersize}</Text>
-            <Text key={i}>{exersize.Sets.length} Sets</Text>
+          <View style={styles.workoutRow} key={i}>
+            <Text key={i + '1'}>{exersize.Exersize}</Text>
+            <Text key={i + '2'}>{exersize.Sets.length} Sets</Text>
           </View>
         ))}
       </>

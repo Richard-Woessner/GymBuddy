@@ -5,6 +5,7 @@ import { SplashScreen, Stack } from 'expo-router';
 import { useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 import { WorkoutsContext, WorkoutsProvider } from '../providers/workoutProvider';
+import { LogsProvider } from '../providers/logsProvider';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -48,17 +49,19 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-    <WorkoutsProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-          <Stack.Screen
-            name="workout"
-            options={{ presentation: 'fullScreenModal', headerShown: true }}
-          />
-        </Stack>
-      </ThemeProvider>
-    </WorkoutsProvider>
+    <LogsProvider>
+      <WorkoutsProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+            <Stack.Screen
+              name="workout"
+              options={{ presentation: 'fullScreenModal', headerShown: true }}
+            />
+          </Stack>
+        </ThemeProvider>
+      </WorkoutsProvider>
+    </LogsProvider>
   );
 }

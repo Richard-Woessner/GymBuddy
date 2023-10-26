@@ -1,14 +1,21 @@
 import Colors from '../constants/Colors';
+import Checkbox from 'expo-checkbox';
 import { View, Text, TextInput } from './Themed';
 import { StyleSheet } from 'react-native';
+import { Set } from '../services/workoutService';
+import { ExersizeCheckBox } from '../app/workout';
 
 interface ExersizeCardProps {
   exersizeName: string;
-  sets: number;
+  sets: Set[];
+  checkBoxes: ExersizeCheckBox[];
+  setCheckBoxes: (value: ExersizeCheckBox[]) => void;
 }
 
 const ExersizeCard = (props: ExersizeCardProps) => {
-  const { exersizeName, sets } = props;
+  const { exersizeName, sets, checkBoxes, setCheckBoxes } = props;
+
+  console.log(sets);
 
   return (
     <View style={styles.container}>
@@ -20,19 +27,50 @@ const ExersizeCard = (props: ExersizeCardProps) => {
           <Text>Weight</Text>
         </View>
 
-        {Array.from(Array(sets)).map((_, i) => {
-          return <Reps key={i} />;
+        {sets.map((set, i) => {
+          console.log(set);
+
+          return (
+            <Reps
+              key={i}
+              set={set}
+              exersizeName={exersizeName}
+              checkBoxes={checkBoxes}
+              setCheckBoxes={setCheckBoxes}
+            />
+          );
         })}
       </View>
     </View>
   );
 };
 
-const Reps = () => {
+const Reps = (props: {
+  set: Set;
+  exersizeName: string;
+  checkBoxes: ExersizeCheckBox[];
+  setCheckBoxes: (value: ExersizeCheckBox[]) => void;
+}) => {
+  const { set, exersizeName, checkBoxes, setCheckBoxes } = props;
+
+  const cb = checkBoxes.find(
+    (cb) => cb.exersize === exersizeName && cb.setNumber === set.SetNumber
+  );
+
+  const toggleBox = (cb: ExersizeCheckBox) => {
+    const temp = [...checkBoxes];
+
+    temp.find((c) => c.exersize === cb.exersize && c.setNumber === cb.setNumber)!.checked =
+      !cb.checked;
+
+    setCheckBoxes(temp);
+  };
+
   return (
     <View style={styles.reps}>
-      <TextInput style={{ borderWidth: 1, width: 30 }} />
-      <TextInput style={{ borderWidth: 1, width: 30 }} />
+      <TextInput value={set.Reps.toString()} style={styles.inputStyle} />
+      <TextInput value={set.Weight.toString()} style={styles.inputStyle} />
+      <Checkbox value={cb?.checked} onChange={() => toggleBox(cb!)} />
     </View>
   );
 };
@@ -56,6 +94,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     paddingBottom: 2,
   },
+  inputStyle: { textAlign: 'center', borderWidth: 1, width: 30 },
 });
 
 export default ExersizeCard;

@@ -5,14 +5,14 @@ interface WorkoutsContextType {
   workouts: Workout[] | null;
   isLoading: boolean;
 
-  getWorkouts: () => Promise<string>;
+  getWorkouts: () => Promise<void>;
 }
 
 const initialValues: WorkoutsContextType = {
   workouts: null,
   isLoading: false,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getWorkouts: function (): Promise<string> {
+  getWorkouts: function (): Promise<void> {
     throw new Error('Function not implemented.');
   },
 };
@@ -31,13 +31,21 @@ export const WorkoutsProvider = (props: WorkoutsProviderProps) => {
     try {
       setIsLoading(true);
       const workoutres = await workoutService.getWorkouts();
-      setWorkouts(workoutres.Workouts);
+      console.log(workoutres);
+
+      const x = workoutres.Workouts.map((workout, i) => {
+        return {
+          ...workout,
+          Id: i.toString(),
+        };
+      });
+
+      setWorkouts(x);
     } catch (e) {
       console.error(e);
     } finally {
       setIsLoading(false);
     }
-    return 'example';
   }, []);
 
   const values = useMemo(

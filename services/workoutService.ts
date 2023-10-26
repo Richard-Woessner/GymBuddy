@@ -8,7 +8,9 @@ class WorkoutService extends AxiosService {
 
   async getWorkouts() {
     try {
-      const { data } = await this.axios.get<GetWorkoutResponse>('/api/workouts');
+      const { data } = await this.axios.get<GetWorkoutResponse>('/api/workouts', {
+        params: { userId: '6urOxvgJCsYFv0ZaIY2IG1lx7ZC2' },
+      });
       return data;
     } catch (e) {
       console.error(e);
@@ -24,6 +26,7 @@ export interface GetWorkoutResponse {
 
 export interface Workout {
   Name: string;
+  Id: string;
   Exersizes: Exersize[];
 }
 
@@ -33,7 +36,7 @@ interface Exersize {
   Type: string;
 }
 
-interface Set {
+export interface Set {
   SetNumber: number;
   Reps: number;
   Weight: number;

@@ -1,20 +1,10 @@
-import {
-  Animated,
-  PanResponder,
-  PanResponderGestureState,
-  Pressable,
-  StyleSheet,
-} from 'react-native';
+import { Animated, StyleSheet } from 'react-native';
 
 import { Text, View } from '../../components/Themed';
 import { useRef, useState, useEffect } from 'react';
 import Button from '../../components/Button';
-import DrawerCard from '../../components/DrawerCards';
-import { Link } from 'expo-router';
 import WorkoutCard from '../../components/home/WorkoutCard';
 import StartWorkoutButton from '../../components/home/StartWorkoutButton';
-import { userService } from '../../services/usersService';
-import { Workout, workoutService } from '../../services/workoutService';
 import { useWorkouts } from '../../providers/workoutProvider';
 
 export default function TabOneScreen() {
@@ -31,7 +21,6 @@ export default function TabOneScreen() {
 
   const initData = async () => {
     workoutsProvider.getWorkouts();
-    console.log(workouts);
   };
 
   useEffect(() => {

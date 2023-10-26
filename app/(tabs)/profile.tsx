@@ -1,7 +1,8 @@
-import { StyleSheet, Image, Button, TextInput } from 'react-native';
+import { StyleSheet, Image, Button, TextInput, Pressable } from 'react-native';
 
 import { Text, View } from '../../components/Themed';
 import { useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function Profile() {
   const [edit, setEdit] = useState(false);
@@ -9,6 +10,14 @@ export default function Profile() {
   return (
     <View style={styles.container}>
       <Image style={{ width: 100, height: 100, borderRadius: 50 }} source={{ uri: dummypicUrl }} />
+
+      <Pressable
+        onPress={() => {
+          console.log('pressed');
+        }}
+      >
+        <Ionicons name="settings" size={32} color="green" />
+      </Pressable>
       <Text style={styles.title}>{dummydata.name}</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <View style={styles.userInfo}>
