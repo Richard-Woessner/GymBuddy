@@ -1,12 +1,12 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { Workout, workoutService } from '../services/workoutService';
-import { logsService } from '../services/logsService';
+import { CompletedWorkout, Session, logsService } from '../services/logsService';
 
 interface LogsContextType {
-  logs: any[] | null;
+  logs: CompletedWorkout[] | null;
   isLoading: boolean;
 
-  getLogs: () => Promise<void>;
+  getLogs: () => Promise<CompletedWorkout[]>;
   postLog: (workout: any) => Promise<void>;
 }
 
@@ -14,7 +14,7 @@ const initialValues: LogsContextType = {
   logs: null,
   isLoading: false,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getLogs: function (): Promise<void> {
+  getLogs: function (): Promise<CompletedWorkout[]> {
     throw new Error('Function not implemented.');
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -30,26 +30,33 @@ export interface LogsProviderProps {
 }
 
 export const LogsProvider = (props: LogsProviderProps) => {
-  const [logs, setLogs] = useState<object[]>([]);
+  const [logs, setLogs] = useState<CompletedWorkout[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const getLogs = useCallback(async () => {
+  const getLogs = useCallback(async (): Promise<CompletedWorkout[]> => {
     try {
       setIsLoading(true);
       const res = await logsService.getLogs();
 
-      setLogs(res);
+      if (res === undefined) {
+        setLogs([]);
+        return [];
+      }
+
+      setLogs(res.completedWorkouts);
+      return res.completedWorkouts;
     } catch (e) {
       console.error(e);
+      return [];
     } finally {
       setIsLoading(false);
     }
   }, []);
 
-  const postLog = useCallback(async (workout: object) => {
+  const postLog = useCallback(async (session: Session) => {
     try {
       setIsLoading(true);
-      const res = await logsService.postLog(workout);
+      await logsService.postLog(session);
     } catch (e) {
       console.error(e);
     } finally {

@@ -1,30 +1,68 @@
-import { StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import { StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, isLightMode } from '../../components/Themed';
+import { useLogs } from '../../providers/logsProvider';
+import { useIsFocused } from '@react-navigation/native';
 
-import { Text, View } from '../../components/Themed';
+const Logs = () => {
+  const { logs, getLogs, isLoading } = useLogs();
+  const isFocused = useIsFocused();
 
-export default function Logs() {
+  const initData = async () => {
+    await getLogs();
+  };
+
+  const backgroundColor = {
+    borderColor: !isLightMode() ? 'white' : 'black',
+  };
+
+  useEffect(() => {
+    initData();
+  }, [isFocused]);
+
+  if (logs === null || logs === undefined) {
+    return;
+  }
+
+  if (isLoading) {
+    return <ActivityIndicator size="large" />;
+  }
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Logs</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <Text style={styles.title}>Welcome to Logsy</Text>
-    </View>
+    <ScrollView>
+      {logs.map((log, i) => (
+        <View key={i} style={{ ...styles.card, ...backgroundColor }}>
+          {log.exersizes.map((exercise, i) => (
+            <View key={i}>
+              <Text style={styles.cardTitle}>{exercise.exersizeName}</Text>
+              <Text>{`Sets: ${exercise.sets.length || '-'}`}</Text>
+              <Text>{`Reps: ${exercise.totalReps || '-'}`}</Text>
+              <Text>{`Total Weight: ${exercise.totalWeight || '-'}`}</Text>
+            </View>
+          ))}
+          <Text style={styles.date}>{new Date(log.date).toLocaleDateString()}</Text>
+        </View>
+      ))}
+    </ScrollView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+  card: {
+    padding: 16,
+    margin: 16,
+    borderRadius: 8,
+    elevation: 3,
+    borderWidth: 1,
   },
-  title: {
-    fontSize: 20,
+  cardTitle: {
+    fontSize: 18,
     fontWeight: 'bold',
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  date: {
+    alignSelf: 'flex-end',
+    fontStyle: 'italic',
   },
 });
+
+export default Logs;

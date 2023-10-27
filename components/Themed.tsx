@@ -21,11 +21,17 @@ export type TextProps = ThemeProps & DefaultText['props'];
 export type ViewProps = ThemeProps & DefaultView['props'];
 export type TextInputProps = ThemeProps & DefaultTextInput['props'];
 
+export function isLightMode() {
+  const ColorScheme = useColorScheme();
+  return ColorScheme === 'light' ? true : false;
+}
+
 export function useThemeColor(
   props: { light?: string; dark?: string },
   colorName: keyof typeof Colors.light & keyof typeof Colors.dark
 ) {
-  const theme = useColorScheme() ?? 'light';
+  const ColorScheme = useColorScheme();
+  const theme = ColorScheme ?? 'light';
   const colorFromProps = props[theme];
 
   if (colorFromProps) {

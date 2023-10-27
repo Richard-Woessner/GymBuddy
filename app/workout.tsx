@@ -6,6 +6,7 @@ import { useWorkouts } from '../providers/workoutProvider';
 import { useEffect, useState } from 'react';
 import { useLogs } from '../providers/logsProvider';
 import { Workout } from '../services/workoutService';
+import { CompletedWorkout, Exersize as SessionExersize } from '../services/logsService';
 
 const WorkoutPage = () => {
   const workoutsProvider = useWorkouts();
@@ -24,27 +25,44 @@ const WorkoutPage = () => {
   };
 
   const postLog = async () => {
-    const tempLog = workout?.Exersizes.map((exersize) => {
-      return {
-        exersize: exersize.Exersize,
-        sets: exersize.Sets.map((set, i) => {
-          if (
-            cb.find((cb) => cb.exersize === exersize.Exersize && cb.setNumber === set.SetNumber)
-              ?.checked === true
-          ) {
-            return {
-              setNumber: i + 1,
-              reps: set.Reps,
-              weight: set.Weight,
-            };
-          }
-        }).filter((set) => set),
-      };
-    }).filter((exersize) => exersize.sets.length > 0);
+    let tempSession: CompletedWorkout = {
+      date: new Date(),
+      exersizes: [],
+    };
 
-    logsProvider.postLog(tempLog).then(() => {
+    workout?.Exersizes.forEach((exersize) => {
+      const sessionExersize: SessionExersize = {
+        exersizeName: exersize.Exersize,
+        sets: [],
+        totalReps: 0,
+        totalWeight: 0,
+      };
+
+      let totalReps = 0;
+      let totalWeight = 0;
+
+      exersize.Sets.forEach((set, i) => {
+        if (cb.find((c) => c.exersize === exersize.Exersize && c.setNumber === i + 1)?.checked) {
+          totalReps += set.Reps;
+          totalWeight += set.Weight;
+
+          sessionExersize.sets.push({
+            reps: set.Reps,
+            weight: set.Weight,
+            setNumber: i + 1,
+          });
+        }
+      });
+
+      sessionExersize.totalReps = totalReps;
+      sessionExersize.totalWeight = totalWeight;
+
+      tempSession.exersizes.push(sessionExersize);
+    });
+
+    logsProvider.postLog(tempSession).then(() => {
       alert('Log posted!');
-      router.back();
+      router?.back();
     });
   };
 
