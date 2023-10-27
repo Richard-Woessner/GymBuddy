@@ -1,23 +1,46 @@
-import React from 'react';
-import { StyleSheet, ScrollView } from 'react-native';
-import { View, Text,  } from '../../components/Themed';
-
-//Hard coded workouts. Will be deleted 
-const workouts = [
-  { id: 1, exercise: 'Push-ups', sets: 3, reps: 15 },
-  { id: 2, exercise: 'Squats', sets: 3, reps: 12 },
-  { id: 3, exercise: 'Jog', sets: 1, duration: '15 minutes' },
-];
+import React, { useEffect } from 'react';
+import { StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, isLightMode } from '../../components/Themed';
+import { useLogs } from '../../providers/logsProvider';
+import { useIsFocused } from '@react-navigation/native';
 
 const Logs = () => {
+  const { logs, getLogs, isLoading } = useLogs();
+  const isFocused = useIsFocused();
+
+  const initData = async () => {
+    await getLogs();
+  };
+
+  const backgroundColor = {
+    borderColor: !isLightMode() ? 'white' : 'black',
+  };
+
+  useEffect(() => {
+    initData();
+  }, [isFocused]);
+
+  if (logs === null || logs === undefined) {
+    return;
+  }
+
+  if (isLoading) {
+    return <ActivityIndicator size="large" />;
+  }
+
   return (
     <ScrollView>
-      {workouts.map((workout) => (
-        <View key={workout.id} style={styles.card}>
-          <Text style={styles.cardTitle}>{workout.exercise}</Text>
-          <Text>{`Sets: ${workout.sets || '-'}`}</Text>
-          <Text>{`Reps: ${workout.reps || '-'}`}</Text>
-          <Text>{`Duration: ${workout.duration || '-'}`}</Text>
+      {logs.map((log, i) => (
+        <View key={i} style={{ ...styles.card, ...backgroundColor }}>
+          {log.exersizes.map((exercise, i) => (
+            <View key={i}>
+              <Text style={styles.cardTitle}>{exercise.exersizeName}</Text>
+              <Text>{`Sets: ${exercise.sets.length || '-'}`}</Text>
+              <Text>{`Reps: ${exercise.totalReps || '-'}`}</Text>
+              <Text>{`Total Weight: ${exercise.totalWeight || '-'}`}</Text>
+            </View>
+          ))}
+          <Text style={styles.date}>{new Date(log.date).toLocaleDateString()}</Text>
         </View>
       ))}
     </ScrollView>
@@ -26,15 +49,19 @@ const Logs = () => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: 'white',
     padding: 16,
     margin: 16,
     borderRadius: 8,
     elevation: 3,
+    borderWidth: 1,
   },
   cardTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  date: {
+    alignSelf: 'flex-end',
+    fontStyle: 'italic',
   },
 });
 

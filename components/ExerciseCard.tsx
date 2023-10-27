@@ -15,8 +15,6 @@ interface ExersizeCardProps {
 const ExersizeCard = (props: ExersizeCardProps) => {
   const { exersizeName, sets, checkBoxes, setCheckBoxes } = props;
 
-  console.log(sets);
-
   return (
     <View style={styles.container}>
       <Text>{exersizeName}</Text>
@@ -28,8 +26,6 @@ const ExersizeCard = (props: ExersizeCardProps) => {
         </View>
 
         {sets.map((set, i) => {
-          console.log(set);
-
           return (
             <Reps
               key={i}

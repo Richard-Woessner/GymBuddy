@@ -12,8 +12,6 @@ export const Button = (props: ButtonProps) => {
   const { buttonStyle, buttonText, onPress, translateYStart } = props;
 
   const openStartPopup = () => {
-    console.log('openStartPopup');
-
     onPress();
     Animated.spring(translateYStart, {
       toValue: 0,
