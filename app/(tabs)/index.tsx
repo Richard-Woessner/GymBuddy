@@ -1,15 +1,17 @@
 import { Animated, StyleSheet } from 'react-native';
 
-import { Text, View } from '../../components/Themed';
+import { Text, View, isLightMode } from '../../components/Themed';
 import { useRef, useState, useEffect } from 'react';
-import Button from '../../components/Button';
+import Button from '../../components/home/HomeButton';
 import WorkoutCard from '../../components/home/WorkoutCard';
 import StartWorkoutButton from '../../components/home/StartWorkoutButton';
 import { useWorkouts } from '../../providers/workoutProvider';
+import Loading from '@components/Loading';
 
 export default function TabOneScreen() {
   const workoutsProvider = useWorkouts();
-  const { workouts } = workoutsProvider;
+  const { workouts, isLoading } = workoutsProvider;
+  const lightMode = isLightMode();
 
   const [startWorkoutDrawerOpen, setstartWorkoutDrawerOpen] = useState(false);
   const [workoutCardOpen, setWorkoutCardOpen] = useState(false);
@@ -23,12 +25,17 @@ export default function TabOneScreen() {
     workoutsProvider.getWorkouts();
   };
 
+  const colorStyles = {
+    backgroundColor: isLightMode() ? 'white' : 'black',
+    borderColor: !isLightMode() ? 'white' : 'black',
+  };
+
   useEffect(() => {
     initData();
   }, []);
 
-  if (!workouts) {
-    return null;
+  if (isLoading || !workouts) {
+    return <Loading />;
   }
 
   return (
@@ -45,7 +52,7 @@ export default function TabOneScreen() {
       {workouts.map((workout, i) => (
         <Button
           key={i}
-          buttonStyle={styles.workoutbuttonStyle}
+          buttonStyle={lightMode ? styles.lightworkoutbuttonStyle : styles.darkworkoutbuttonStyle}
           buttonText={workout.Name}
           onPress={() => {
             setWorkoutCardOpen(!workoutCardOpen);
@@ -101,7 +108,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  workoutbuttonStyle: {
+  lightworkoutbuttonStyle: {
     borderRadius: 10,
     backgroundColor: 'transparent',
     padding: 30,
@@ -109,8 +116,17 @@ const styles = StyleSheet.create({
     marginRight: 250,
     marginTop: 50,
     borderWidth: 2,
-    borderColor: '#0077FF',
-    color: 'white',
+    borderColor: 'black',
+  },
+  darkworkoutbuttonStyle: {
+    borderRadius: 10,
+    backgroundColor: 'transparent',
+    padding: 30,
+    marginLeft: 20,
+    marginRight: 250,
+    marginTop: 50,
+    borderWidth: 2,
+    borderColor: 'white',
   },
   workoutpopupContainer: {
     flex: 0,
@@ -118,7 +134,6 @@ const styles = StyleSheet.create({
     width: '80%',
     maxHeight: '60%',
     minHeight: '60%',
-    backgroundColor: 'black',
     borderRadius: 15,
     border: '2px solid white',
     padding: 20,

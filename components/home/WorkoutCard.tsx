@@ -1,8 +1,9 @@
 import { Animated, Pressable, StyleSheet } from 'react-native';
-import { View, Text } from '../Themed';
+import { View, Text, isLightMode } from '../Themed';
 import DrawerCard from '../DrawerCards';
 import { router } from 'expo-router';
 import { Workout } from '../../services/workoutService';
+import Button from '@components/Button';
 
 interface WorkoutCardProps {
   open: boolean;
@@ -13,6 +14,7 @@ interface WorkoutCardProps {
 
 const WorkoutCard = (props: WorkoutCardProps) => {
   const { open, setOpen, translateYStart, workout } = props;
+  const lightMode = isLightMode();
 
   const redirectToWorkout = (workoutId: string) => {
     setOpen(false);
@@ -29,13 +31,11 @@ const WorkoutCard = (props: WorkoutCardProps) => {
       openPopup={open}
       setOpenPopup={setOpen}
       animationType="fade"
-      style={styles.workoutpopupContainer}
+      style={lightMode ? styles.lightWorkoutpopupContainer : styles.darkWorkoutpopupContainer}
     >
       <>
         <Text>{workout.Name}</Text>
-        <Pressable onPress={() => redirectToWorkout(workout.Id)}>
-          <Text style={styles.buttonStyle}>Start</Text>
-        </Pressable>
+        <Button buttonText="Start" onPress={() => redirectToWorkout(workout.Id)} />
 
         {workout.Exersizes.map((exersize, i) => (
           <View style={styles.workoutRow} key={i}>
@@ -49,7 +49,7 @@ const WorkoutCard = (props: WorkoutCardProps) => {
 };
 
 const styles = StyleSheet.create({
-  workoutpopupContainer: {
+  darkWorkoutpopupContainer: {
     flex: 0,
     justifyContent: 'flex-start',
     width: '80%',
@@ -58,6 +58,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     borderRadius: 15,
     border: '2px solid white',
+    padding: 20,
+    alignItems: 'center',
+  },
+  lightWorkoutpopupContainer: {
+    flex: 0,
+    justifyContent: 'flex-start',
+    width: '80%',
+    maxHeight: '60%',
+    minHeight: '60%',
+    backgroundColor: '#f5f5f5',
+    borderRadius: 15,
+    border: '2px solid black',
     padding: 20,
     alignItems: 'center',
   },
@@ -72,6 +84,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
+    backgroundColor: 'transparent',
   },
 });
 

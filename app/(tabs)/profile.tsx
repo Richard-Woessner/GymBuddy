@@ -33,7 +33,7 @@ export default function Profile() {
         })}
       </View>
       <Button
-        title="Edit"
+        buttonText="Edit"
         onPress={() => {
           setEdit(!edit);
         }}
