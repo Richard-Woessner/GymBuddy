@@ -1,8 +1,9 @@
-import { StyleSheet, Image, Button, TextInput, Pressable } from 'react-native';
+import { StyleSheet, Image, TextInput, Pressable } from 'react-native';
 
 import { Text, View } from '../../components/Themed';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
+import Button from '@components/Button';
 
 export default function Profile() {
   const [edit, setEdit] = useState(false);

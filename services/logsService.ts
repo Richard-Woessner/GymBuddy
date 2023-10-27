@@ -1,4 +1,4 @@
-import { getWorkoutData } from '../test_data/getWorkoutData';
+import { CompletedWorkout } from '@models/CompletedWorkout';
 import { AxiosService } from './axiosService';
 
 class LogsService extends AxiosService {
@@ -34,24 +34,6 @@ class LogsService extends AxiosService {
 interface GetWorkoutResponse {
   userId: string;
   completedWorkouts: CompletedWorkout[];
-}
-
-export interface CompletedWorkout {
-  exersizes: Exersize[];
-  date: Date;
-}
-
-export interface Exersize {
-  totalWeight: number;
-  totalReps: number;
-  exersizeName: string;
-  sets: Set[];
-}
-
-interface Set {
-  setNumber: number;
-  reps: number;
-  weight: number;
 }
 
 export const logsService = new LogsService();

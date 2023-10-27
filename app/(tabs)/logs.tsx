@@ -24,8 +24,8 @@ const Logs = () => {
     return;
   }
 
-  if (isLoading) {
-    return <ActivityIndicator size="large" />;
+  if (!isLoading) {
+    return <ActivityIndicator />;
   }
 
   return (
