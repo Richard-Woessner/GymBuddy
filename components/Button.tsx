@@ -1,41 +1,32 @@
-import { Animated, Pressable, StyleProp, StyleSheet, ViewStyle } from 'react-native';
-import { View, Text } from './Themed';
+import { Pressable, StyleSheet } from 'react-native';
+import { View, Text, isLightMode } from './Themed';
 
-interface ButtonProps {
-  buttonStyle: StyleProp<ViewStyle>;
+export interface ButtonProps {
   buttonText: string;
   onPress: () => void;
-  translateYStart: Animated.Value;
 }
 
-export const Button = (props: ButtonProps) => {
-  const { buttonStyle, buttonText, onPress, translateYStart } = props;
-
-  const openStartPopup = () => {
-    onPress();
-    Animated.spring(translateYStart, {
-      toValue: 0,
-      useNativeDriver: false,
-    }).start();
-  };
+const Button = (props: ButtonProps) => {
+  const { buttonText, onPress } = props;
 
   return (
-    <Pressable style={buttonStyle} onPress={openStartPopup}>
-      {({ pressed }) => (
-        <Text
-          style={{
-            color: 'white',
-          }}
-        >
-          {buttonText}
-        </Text>
-      )}
+    <Pressable onPress={onPress} style={styles.lightButton}>
+      {({ pressed }) => <Text style={styles.text}>{buttonText}</Text>}
     </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', justifyContent: 'flex-start', paddingTop: 20 },
+  lightButton: {
+    backgroundColor: '#0277FF',
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+  },
+  text: {
+    fontSize: 16,
+  },
 });
 
 export default Button;

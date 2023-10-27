@@ -3,6 +3,7 @@ import { StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import { View, Text, isLightMode } from '../../components/Themed';
 import { useLogs } from '../../providers/logsProvider';
 import { useIsFocused } from '@react-navigation/native';
+import Loading from '@components/Loading';
 
 const Logs = () => {
   const { logs, getLogs, isLoading } = useLogs();
@@ -25,7 +26,7 @@ const Logs = () => {
   }
 
   if (isLoading) {
-    return <ActivityIndicator size="large" />;
+    return <Loading />;
   }
 
   return (

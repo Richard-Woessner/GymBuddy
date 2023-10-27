@@ -1,6 +1,6 @@
+import { CompletedWorkout } from '@models/CompletedWorkout';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
-import { Workout, workoutService } from '../services/workoutService';
-import { CompletedWorkout, Session, logsService } from '../services/logsService';
+import { logsService } from '../services/logsService';
 
 interface LogsContextType {
   logs: CompletedWorkout[] | null;

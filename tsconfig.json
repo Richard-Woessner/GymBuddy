@@ -2,14 +2,11 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-    // "paths":{
-    //   "@c/*": ["./components/*"]
-    // }
+    "paths": {
+      "@models/*": ["./models/*"],
+      "@components/*": ["./components/*.tsx"],
+      "@homeComponents/*": ["./components/home/*.tsx"]
+    }
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts"
-  ]
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
 }

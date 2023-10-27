@@ -6,7 +6,7 @@ import { useWorkouts } from '../providers/workoutProvider';
 import { useEffect, useState } from 'react';
 import { useLogs } from '../providers/logsProvider';
 import { Workout } from '../services/workoutService';
-import { CompletedWorkout, Exersize as SessionExersize } from '../services/logsService';
+import { CompletedWorkout, Exersize as SessionExersize } from '@models/CompletedWorkout';
 
 const WorkoutPage = () => {
   const workoutsProvider = useWorkouts();
