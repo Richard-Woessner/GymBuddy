@@ -49,18 +49,20 @@ export default function TabOneScreen() {
         translateYStart={translateYStart}
       />
 
-      {workouts.map((workout, i) => (
-        <Button
-          key={i}
-          buttonStyle={lightMode ? styles.lightworkoutbuttonStyle : styles.darkworkoutbuttonStyle}
-          buttonText={workout.Name}
-          onPress={() => {
-            setWorkoutCardOpen(!workoutCardOpen);
-            setWorkout(i);
-          }}
-          translateYStart={translateYWorkout}
-        />
-      ))}
+      <View style={styles.cards}>
+        {workouts.map((workout, i) => (
+          <Button
+            key={i}
+            buttonStyle={lightMode ? styles.lightworkoutbuttonStyle : styles.darkworkoutbuttonStyle}
+            buttonText={workout.Name}
+            onPress={() => {
+              setWorkoutCardOpen(!workoutCardOpen);
+              setWorkout(i);
+            }}
+            translateYStart={translateYWorkout}
+          />
+        ))}
+      </View>
 
       <StartWorkoutButton
         open={startWorkoutDrawerOpen}
@@ -112,18 +114,15 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: 'transparent',
     padding: 30,
-    marginLeft: 20,
-    marginRight: 250,
     marginTop: 50,
     borderWidth: 2,
     borderColor: 'black',
+    width: 'auto',
   },
   darkworkoutbuttonStyle: {
     borderRadius: 10,
     backgroundColor: 'transparent',
     padding: 30,
-    marginLeft: 20,
-    marginRight: 250,
     marginTop: 50,
     borderWidth: 2,
     borderColor: 'white',
@@ -138,5 +137,12 @@ const styles = StyleSheet.create({
     border: '2px solid white',
     padding: 20,
     alignItems: 'center',
+  },
+  cards: {
+    flexDirection: 'row',
+    width: '100%',
+    flexWrap: 'wrap',
+    gap: 10,
+    paddingHorizontal: 10,
   },
 });
