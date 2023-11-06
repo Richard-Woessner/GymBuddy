@@ -1,7 +1,9 @@
-import { StyleSheet, Image, Button, TextInput } from 'react-native';
+import { StyleSheet, Image, Button, TextInput, Pressable } from 'react-native';
 
 import { Text, View } from '../../components/Themed';
 import { useState } from 'react';
+import { Link } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function Profile() {
   const [edit, setEdit] = useState(false);
@@ -28,9 +30,19 @@ export default function Profile() {
           setEdit(!edit);
         }}
       />
+      <Link href="/profile-settings">
+        <Button
+          title="Settings"
+          onPress={() => {
+          }}
+        />
+
+      </Link>
     </View>
   );
 }
+
+
 
 const Key = (props: { text: string }) => {
   const { text } = props;

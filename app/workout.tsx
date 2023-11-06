@@ -4,7 +4,7 @@ import { Button, StyleSheet } from 'react-native';
 import Colors from '../constants/Colors';
 
 const Workout = () => {
-  
+
   return (
     <View style={styles.container}>
       <Text>Workout</Text>
@@ -14,10 +14,10 @@ const Workout = () => {
 
       <ExersizeCard exersizeName="Deadlift" sets={2} />
 
-      <Button title="Add Exersize" onPress={() => {}} />
+      <Button title="Add Exersize" onPress={() => { }} />
     </View>
   );
-  
+
 };
 
 
