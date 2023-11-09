@@ -1,14 +1,26 @@
-import React, { useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { StyleSheet, TextInput, TouchableOpacity, ScrollView} from 'react-native';
 import { Text, View } from '../../components/Themed';
 
 export default function Profile() {
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [text, setText] = useState<string>('');
+
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  useEffect(() => {
+    scrollViewRef.current?.scrollToEnd({ animated: true });
+  }, [messages]);
 
   const handleSend = () => {
     if (text.trim() !== '') {
-      setMessages([...messages, text]);
+      const newMessage: Message = {
+        id: messages.length + 1,
+        text: text,
+        timestamp: new Date(),
+        isUser: true,
+      };
+      setMessages([...messages, newMessage]);
       setText('');
     }
   };
@@ -19,11 +31,14 @@ export default function Profile() {
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
 
       {/* Display Messages */}
-      <ScrollView style={styles.messageContainer}>
-        {messages.map((message, index) => (
-          <Text key={index} style={styles.messageText}>
-            {message}
-          </Text>
+      <ScrollView ref={scrollViewRef} style={styles.messageContainer}>
+        {messages.map((message) => (
+          <View key={message.id} style={message.isUser ? styles.userMessageContainer : styles.otherMessageContainer}>
+            <View style={message.isUser ? styles.userMessage : styles.otherMessage}>
+              <Text style={styles.messageText}>{message.text}</Text>
+            </View>
+            <Text style={styles.timestamp}>{formatTimestamp(message.timestamp)}</Text>
+          </View>
         ))}
       </ScrollView>
 
@@ -43,56 +58,99 @@ export default function Profile() {
   );
 }
 
+interface Message {
+  id: number;
+  text: string;
+  timestamp: Date;
+  isUser: boolean;
+}
+
+const formatTimestamp = (timestamp: Date) => {
+  return timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
   title: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
+    textAlign: 'center',
   },
   separator: {
     marginVertical: 10,
     height: 1,
-    width: '80%',
+    width: '100%',
+    backgroundColor: '#ccc',
   },
   messageContainer: {
     flex: 1,
-    width: '100%',
-    padding: 10,
+  },
+  userMessageContainer: {
+    alignSelf: 'flex-end',
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    marginVertical: 4,
+    maxWidth: '70%',
+  },
+  otherMessageContainer: {
+    alignSelf: 'flex-start',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    marginVertical: 4,
+    maxWidth: '70%',
+  },
+  userMessage: {
+    backgroundColor: '#007BFF',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  otherMessage: {
+    backgroundColor: '#E5E5EA',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
   },
   messageText: {
+    color: 'white',
     fontSize: 16,
-    marginBottom: 5,
+  },
+  timestamp: {
+    color: 'gray',
+    fontSize: 12,
+    alignSelf: 'flex-end',
+    marginTop: 4,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     borderTopWidth: 1,
     borderColor: '#ccc',
-    padding: 10,
-    width: '100%',
-    position: 'absolute',
-    bottom: 0,
+    paddingVertical: 8,
   },
   input: {
     flex: 1,
-    marginRight: 10,
-    padding: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 20,
+    marginRight: 8,
   },
   sendButton: {
-    backgroundColor: 'blue',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    backgroundColor: '#007BFF',
     borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
   },
   sendButtonText: {
     color: 'white',
+    fontSize: 16,
   },
 });
