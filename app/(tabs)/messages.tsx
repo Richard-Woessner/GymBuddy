@@ -5,12 +5,26 @@ import { Text, View } from '../../components/Themed';
 export default function Profile() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [text, setText] = useState<string>('');
-
   const scrollViewRef = useRef<ScrollView>(null);
+
+  useEffect(() => {
+    fetchMessages();
+  }, []);
 
   useEffect(() => {
     scrollViewRef.current?.scrollToEnd({ animated: true });
   }, [messages]);
+
+  const fetchMessages = async () => {
+    try {
+      const response = await fetch('https://it3049c-chat.fly.dev/messages');
+      const data = await response.json();
+
+      setMessages(data);
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+    }
+  };
 
   const handleSend = () => {
     if (text.trim() !== '') {
@@ -66,6 +80,10 @@ interface Message {
 }
 
 const formatTimestamp = (timestamp: Date) => {
+  if (!(timestamp instanceof Date)) {
+    return '';
+  }
+  
   return timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 };
 
@@ -112,7 +130,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   otherMessage: {
-    backgroundColor: '#E5E5EA',
+    backgroundColor: '#d8d8d8',
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
