@@ -16,8 +16,6 @@ const WorkoutCard = (props: WorkoutCardProps) => {
   const { open, setOpen, translateYStart, workout } = props;
   const lightMode = isLightMode();
 
-  console.log(lightMode);
-
   const redirectToWorkout = (workoutId: string) => {
     setOpen(false);
     router.push({ pathname: `/workout`, params: { id: workoutId } });

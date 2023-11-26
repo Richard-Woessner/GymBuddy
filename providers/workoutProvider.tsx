@@ -31,7 +31,6 @@ export const WorkoutsProvider = (props: WorkoutsProviderProps) => {
     try {
       setIsLoading(true);
       const workoutres = await workoutService.getWorkouts();
-      console.log(workoutres);
 
       const x = workoutres.Workouts.map((workout, i) => {
         return {
