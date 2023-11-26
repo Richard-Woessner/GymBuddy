@@ -38,4 +38,5 @@ interface Set {
   setNumber: number;
   reps: number;
   weight: number;
+  completed: boolean;
 }

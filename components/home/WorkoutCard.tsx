@@ -16,6 +16,8 @@ const WorkoutCard = (props: WorkoutCardProps) => {
   const { open, setOpen, translateYStart, workout } = props;
   const lightMode = isLightMode();
 
+  console.log(lightMode);
+
   const redirectToWorkout = (workoutId: string) => {
     setOpen(false);
     router.push({ pathname: `/workout`, params: { id: workoutId } });
@@ -57,7 +59,8 @@ const styles = StyleSheet.create({
     minHeight: '60%',
     backgroundColor: 'black',
     borderRadius: 15,
-    border: '2px solid white',
+    borderWidth: 1,
+    borderColor: '#F5F5F5',
     padding: 20,
     alignItems: 'center',
   },
@@ -69,7 +72,8 @@ const styles = StyleSheet.create({
     minHeight: '60%',
     backgroundColor: '#f5f5f5',
     borderRadius: 15,
-    border: '2px solid black',
+    borderWidth: 1,
+    borderColor: 'black',
     padding: 20,
     alignItems: 'center',
   },

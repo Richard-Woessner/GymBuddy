@@ -40,6 +40,7 @@ export interface Set {
   SetNumber: number;
   Reps: number;
   Weight: number;
+  Completed?: boolean;
 }
 
 export const workoutService = new WorkoutService();

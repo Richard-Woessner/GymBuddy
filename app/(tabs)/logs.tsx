@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, ScrollView, ActivityIndicator, RefreshControl, FlatList } from 'react-native';
+import {
+  StyleSheet,
+  ScrollView,
+  ActivityIndicator,
+  RefreshControl,
+  FlatList,
+  SafeAreaView,
+} from 'react-native';
 import { View, Text, isLightMode } from '../../components/Themed';
 import { useLogs } from '../../providers/logsProvider';
 import { useIsFocused } from '@react-navigation/native';
 import Loading from '@components/Loading';
 import { CompletedWorkout } from '@models/CompletedWorkout';
 import { hashObject } from '../../helpers/func';
+import dayjs from 'dayjs';
 
 const Logs = () => {
   const { logs, getLogs, isLoading } = useLogs();
@@ -39,17 +47,19 @@ const Logs = () => {
     const key = hashObject(log);
 
     return (
-      <View key={key} style={{ ...styles.card, ...backgroundColor }}>
-        {log.exersizes.map((exercise, i) => (
-          <View key={i}>
-            <Text style={styles.cardTitle}>{exercise.exersizeName}</Text>
-            <Text>{`Sets: ${exercise.sets.length || '-'}`}</Text>
-            <Text>{`Reps: ${exercise.totalReps || '-'}`}</Text>
-            <Text>{`Total Weight: ${exercise.totalWeight || '-'}`}</Text>
-          </View>
-        ))}
-        <Text style={styles.date}>{new Date(log.date).toLocaleDateString()}</Text>
-      </View>
+      <SafeAreaView>
+        <View key={key} style={{ ...styles.card, ...backgroundColor }}>
+          {log.exersizes.map((exercise, i) => (
+            <View key={i}>
+              <Text style={styles.cardTitle}>{exercise.exersizeName}</Text>
+              <Text>{`Sets: ${exercise.sets.length || '-'}`}</Text>
+              <Text>{`Reps: ${exercise.totalReps || '-'}`}</Text>
+              <Text>{`Total Weight: ${exercise.totalWeight || '-'}`}</Text>
+            </View>
+          ))}
+          <Text style={styles.date}>{dayjs(log.date).format('MMM-DD hh:mm a')}</Text>
+        </View>
+      </SafeAreaView>
     );
   };
 
@@ -57,14 +67,14 @@ const Logs = () => {
     return;
   }
 
-  if (isLoading || refreshing) {
+  if (isLoading) {
     return <Loading />;
   }
 
   return (
     <FlatList
       style={styles.container}
-      data={logs}
+      data={logs.sort((a, b) => (a.date > b.date ? -1 : 1))}
       renderItem={({ item }) => <LogView log={item} />}
       keyExtractor={(item) => hashObject(item).toString()}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}

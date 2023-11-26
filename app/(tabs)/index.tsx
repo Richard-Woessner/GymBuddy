@@ -1,4 +1,4 @@
-import { Animated, StyleSheet } from 'react-native';
+import { Animated, SafeAreaView, StyleSheet } from 'react-native';
 
 import { Text, View, isLightMode } from '../../components/Themed';
 import { useRef, useState, useEffect } from 'react';
@@ -39,44 +39,48 @@ export default function TabOneScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Home</Text>
+    <SafeAreaView>
+      <View style={styles.container}>
+        <Text style={styles.title}>Home</Text>
 
-      <Button
-        buttonStyle={styles.buttonStyle}
-        buttonText="Start a workout"
-        onPress={() => setstartWorkoutDrawerOpen(!startWorkoutDrawerOpen)}
-        translateYStart={translateYStart}
-      />
+        <Button
+          buttonStyle={styles.buttonStyle}
+          buttonText="Start a workout"
+          onPress={() => setstartWorkoutDrawerOpen(!startWorkoutDrawerOpen)}
+          translateYStart={translateYStart}
+        />
 
-      <View style={styles.cards}>
-        {workouts.map((workout, i) => (
-          <Button
-            key={i}
-            buttonStyle={lightMode ? styles.lightworkoutbuttonStyle : styles.darkworkoutbuttonStyle}
-            buttonText={workout.Name}
-            onPress={() => {
-              setWorkoutCardOpen(!workoutCardOpen);
-              setWorkout(i);
-            }}
-            translateYStart={translateYWorkout}
-          />
-        ))}
+        <View style={styles.cards}>
+          {workouts.map((workout, i) => (
+            <Button
+              key={i}
+              buttonStyle={
+                lightMode ? styles.lightworkoutbuttonStyle : styles.darkworkoutbuttonStyle
+              }
+              buttonText={workout.Name}
+              onPress={() => {
+                setWorkoutCardOpen(!workoutCardOpen);
+                setWorkout(i);
+              }}
+              translateYStart={translateYWorkout}
+            />
+          ))}
+        </View>
+
+        <StartWorkoutButton
+          open={startWorkoutDrawerOpen}
+          setOpen={setstartWorkoutDrawerOpen}
+          translateYStart={translateYStart}
+        />
+
+        <WorkoutCard
+          open={workoutCardOpen}
+          setOpen={setWorkoutCardOpen}
+          translateYStart={translateYWorkout}
+          workout={workouts[workout || 0]}
+        />
       </View>
-
-      <StartWorkoutButton
-        open={startWorkoutDrawerOpen}
-        setOpen={setstartWorkoutDrawerOpen}
-        translateYStart={translateYStart}
-      />
-
-      <WorkoutCard
-        open={workoutCardOpen}
-        setOpen={setWorkoutCardOpen}
-        translateYStart={translateYWorkout}
-        workout={workouts[workout || 0]}
-      />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -108,11 +112,11 @@ const styles = StyleSheet.create({
     padding: 15,
     margin: 5,
     alignItems: 'center',
+    justifyContent: 'center',
+    height: 'auto',
   },
-
   lightworkoutbuttonStyle: {
     borderRadius: 10,
-    backgroundColor: 'transparent',
     padding: 30,
     marginTop: 50,
     borderWidth: 2,
@@ -121,11 +125,12 @@ const styles = StyleSheet.create({
   },
   darkworkoutbuttonStyle: {
     borderRadius: 10,
-    backgroundColor: 'transparent',
     padding: 30,
     marginTop: 50,
     borderWidth: 2,
     borderColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   workoutpopupContainer: {
     flex: 0,
