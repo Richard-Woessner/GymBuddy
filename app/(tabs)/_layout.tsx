@@ -25,7 +25,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'profile title',
+          title: 'Profile',
           tabBarIcon: ({ color }) => <TabBarIcon name="person-outline" color={color} />,
           headerShown: false,
         }}
@@ -33,7 +33,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="logs"
         options={{
-          title: 'logs title',
+          title: 'Logs',
           tabBarIcon: ({ color }) => <TabBarIcon name="book-outline" color={color} />,
           headerShown: false,
         }}
@@ -44,26 +44,12 @@ export default function TabLayout() {
           title: 'Home',
           tabBarIcon: ({ color }) => <TabBarIcon name="home-outline" color={color} />,
           headerShown: false,
-          // headerRight: () => (
-          //   <Link href="/modal" asChild>
-          //     <Pressable>
-          //       {({ pressed }) => (
-          //         <FontAwesome
-          //           name="info-circle"
-          //           size={25}
-          //           color={Colors[colorScheme ?? 'light'].text}
-          //           style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-          //         />
-          //       )}
-          //     </Pressable>
-          //   </Link>
-          // ),
         }}
       />
       <Tabs.Screen
         name="trainer"
         options={{
-          title: 'trainer',
+          title: 'Trainer',
           tabBarIcon: ({ color }) => <TabBarIcon name="person-add-outline" color={color} />,
           headerShown: false,
         }}
@@ -71,7 +57,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="messages"
         options={{
-          title: 'messages',
+          title: 'Messages',
           tabBarIcon: ({ color }) => <TabBarIcon name="chatbubbles-outline" color={color} />,
           headerShown: false,
         }}
