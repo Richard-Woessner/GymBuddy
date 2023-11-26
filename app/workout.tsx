@@ -1,12 +1,13 @@
 import ExersizeCard from '../components/ExerciseCard';
 import { View, Text } from '../components/Themed';
-import { Button, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useWorkouts } from '../providers/workoutProvider';
 import { useEffect, useState } from 'react';
 import { useLogs } from '../providers/logsProvider';
 import { Workout } from '../services/workoutService';
 import { CompletedWorkout, Exersize as SessionExersize } from '@models/CompletedWorkout';
+import Button from '@components/Button';
 
 const WorkoutPage = () => {
   const workoutsProvider = useWorkouts();
@@ -14,55 +15,57 @@ const WorkoutPage = () => {
   const { workouts } = workoutsProvider;
   const { id } = useLocalSearchParams();
 
-  const [cb, setCb] = useState<ExersizeCheckBox[]>([]);
-
-  const workout = workouts?.find((workout) => workout.Id === id);
+  const [workout, setWorkout] = useState<Workout | null>(null);
 
   const initData = async () => {
-    const checkboxes = workoutsToFormState(workout!);
+    const tempWorkout = workouts?.find((w) => w.Id === id);
 
-    setCb(checkboxes);
+    if (!tempWorkout) {
+      return;
+    }
+
+    setWorkout(tempWorkout);
+
+    const checkboxes = workoutsToFormState(workout!);
   };
 
   const postLog = async () => {
+    if (!workout || !workout?.Exersizes) {
+      alert('No workout selected');
+      return;
+    }
+
     let tempSession: CompletedWorkout = {
       date: new Date(),
       exersizes: [],
     };
 
-    workout?.Exersizes.forEach((exersize) => {
-      const sessionExersize: SessionExersize = {
+    workout.Exersizes.forEach((exersize) => {
+      const tempExersize: SessionExersize = {
         exersizeName: exersize.Exersize,
         sets: [],
         totalReps: 0,
         totalWeight: 0,
       };
 
-      let totalReps = 0;
-      let totalWeight = 0;
+      exersize.Sets.forEach((set) => {
+        tempExersize.sets.push({
+          setNumber: set.SetNumber,
+          reps: set.Reps,
+          weight: set.Weight,
+          completed: set.Completed || false,
+        });
 
-      exersize.Sets.forEach((set, i) => {
-        if (cb.find((c) => c.exersize === exersize.Exersize && c.setNumber === i + 1)?.checked) {
-          totalReps += set.Reps;
-          totalWeight += set.Weight;
-
-          sessionExersize.sets.push({
-            reps: set.Reps,
-            weight: set.Weight,
-            setNumber: i + 1,
-          });
-        }
+        tempExersize.totalReps += set.Reps;
+        tempExersize.totalWeight += set.Weight;
       });
 
-      sessionExersize.totalReps = totalReps;
-      sessionExersize.totalWeight = totalWeight;
-
-      tempSession.exersizes.push(sessionExersize);
+      tempSession.exersizes.push(tempExersize);
     });
 
     logsProvider.postLog(tempSession).then(() => {
       alert('Log posted!');
-      router?.back();
+      router?.push({ pathname: '/' });
     });
   };
 
@@ -78,12 +81,12 @@ const WorkoutPage = () => {
         <ExersizeCard
           exersizeName={e.Exersize}
           sets={e.Sets}
-          checkBoxes={cb}
-          setCheckBoxes={setCb}
+          workout={workout}
+          setWorkout={setWorkout}
         />
       ))}
 
-      <Button title="Post Exersize" onPress={() => postLog()} />
+      <Button buttonText="Post Exersize" onPress={() => postLog()} />
     </View>
   );
 };

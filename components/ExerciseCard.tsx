@@ -2,18 +2,18 @@ import Colors from '../constants/Colors';
 import Checkbox from 'expo-checkbox';
 import { View, Text, TextInput } from './Themed';
 import { StyleSheet } from 'react-native';
-import { Set } from '../services/workoutService';
+import { Set, Workout } from '../services/workoutService';
 import { ExersizeCheckBox } from '../app/workout';
 
 interface ExersizeCardProps {
   exersizeName: string;
   sets: Set[];
-  checkBoxes: ExersizeCheckBox[];
-  setCheckBoxes: (value: ExersizeCheckBox[]) => void;
+  workout: Workout;
+  setWorkout: (value: Workout) => void;
 }
 
 const ExersizeCard = (props: ExersizeCardProps) => {
-  const { exersizeName, sets, checkBoxes, setCheckBoxes } = props;
+  const { exersizeName, sets, workout, setWorkout } = props;
 
   return (
     <View style={styles.container}>
@@ -23,6 +23,7 @@ const ExersizeCard = (props: ExersizeCardProps) => {
         <View style={styles.reps}>
           <Text>Reps</Text>
           <Text>Weight</Text>
+          <Text>Completed</Text>
         </View>
 
         {sets.map((set, i) => {
@@ -31,8 +32,9 @@ const ExersizeCard = (props: ExersizeCardProps) => {
               key={i}
               set={set}
               exersizeName={exersizeName}
-              checkBoxes={checkBoxes}
-              setCheckBoxes={setCheckBoxes}
+              sets={sets}
+              workout={workout}
+              setWorkout={setWorkout}
             />
           );
         })}
@@ -44,29 +46,36 @@ const ExersizeCard = (props: ExersizeCardProps) => {
 const Reps = (props: {
   set: Set;
   exersizeName: string;
-  checkBoxes: ExersizeCheckBox[];
-  setCheckBoxes: (value: ExersizeCheckBox[]) => void;
+  sets: Set[];
+  workout: Workout;
+  setWorkout: (value: Workout) => void;
 }) => {
-  const { set, exersizeName, checkBoxes, setCheckBoxes } = props;
+  const { set, exersizeName, sets, workout, setWorkout } = props;
 
-  const cb = checkBoxes.find(
-    (cb) => cb.exersize === exersizeName && cb.setNumber === set.SetNumber
-  );
+  const toggleBox = (set: Set) => {
+    const tempWorkout = { ...workout };
+    const tempExersize = tempWorkout.Exersizes.find((e) => e.Exersize === exersizeName);
 
-  const toggleBox = (cb: ExersizeCheckBox) => {
-    const temp = [...checkBoxes];
+    if (!tempExersize) {
+      return;
+    }
 
-    temp.find((c) => c.exersize === cb.exersize && c.setNumber === cb.setNumber)!.checked =
-      !cb.checked;
+    const tempSet = tempExersize.Sets.find((s) => s === set);
 
-    setCheckBoxes(temp);
+    if (!tempSet) {
+      return;
+    }
+
+    tempSet.Completed = !tempSet.Completed;
+
+    setWorkout(tempWorkout);
   };
 
   return (
     <View style={styles.reps}>
       <TextInput value={set.Reps.toString()} style={styles.inputStyle} />
       <TextInput value={set.Weight.toString()} style={styles.inputStyle} />
-      <Checkbox value={cb?.checked} onChange={() => toggleBox(cb!)} />
+      <Checkbox value={set.Completed} onValueChange={() => toggleBox(set)} />
     </View>
   );
 };

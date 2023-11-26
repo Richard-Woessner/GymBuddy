@@ -1,5 +1,5 @@
 import { Animated, Pressable, StyleProp, StyleSheet, ViewStyle } from 'react-native';
-import { View, Text } from '../Themed';
+import { Text, View } from '../Themed';
 
 interface HomeButtonProps {
   buttonStyle: StyleProp<ViewStyle>;
@@ -21,7 +21,7 @@ export const HomeButton = (props: HomeButtonProps) => {
 
   return (
     <Pressable style={buttonStyle} onPress={openStartPopup}>
-      {({ pressed }) => <Text>{buttonText}</Text>}
+      {({ pressed }) => <Text style={{ height: 15 }}>{buttonText}</Text>}
     </Pressable>
   );
 };
