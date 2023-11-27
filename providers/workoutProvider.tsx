@@ -5,14 +5,14 @@ interface WorkoutsContextType {
   workouts: Workout[] | null;
   isLoading: boolean;
 
-  getWorkouts: () => Promise<void>;
+  getWorkouts: () => Promise<Workout[]>;
 }
 
 const initialValues: WorkoutsContextType = {
   workouts: null,
   isLoading: false,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getWorkouts: function (): Promise<void> {
+  getWorkouts: function (): Promise<Workout[]> {
     throw new Error('Function not implemented.');
   },
 };
@@ -28,6 +28,8 @@ export const WorkoutsProvider = (props: WorkoutsProviderProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const getWorkouts = useCallback(async () => {
+    const tempWorkouts: Workout[] = [];
+
     try {
       setIsLoading(true);
       const workoutres = await workoutService.getWorkouts();
@@ -40,10 +42,12 @@ export const WorkoutsProvider = (props: WorkoutsProviderProps) => {
       });
 
       setWorkouts(x);
+      tempWorkouts.push(...x);
     } catch (e) {
       console.error(e);
     } finally {
       setIsLoading(false);
+      return tempWorkouts;
     }
   }, []);
 
