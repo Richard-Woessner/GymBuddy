@@ -21,7 +21,7 @@ export const HomeButton = (props: HomeButtonProps) => {
 
   return (
     <Pressable style={buttonStyle} onPress={openStartPopup}>
-      {({ pressed }) => <Text style={{ height: 15 }}>{buttonText}</Text>}
+      {({ pressed }) => <Text style={{ height: 18 }}>{buttonText}</Text>}
     </Pressable>
   );
 };
