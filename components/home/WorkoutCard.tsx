@@ -16,6 +16,8 @@ const WorkoutCard = (props: WorkoutCardProps) => {
   const { open, setOpen, translateYStart, workout } = props;
   const lightMode = isLightMode();
 
+  console.log(workout);
+
   const redirectToWorkout = (workoutId: string) => {
     setOpen(false);
     router.push({ pathname: `/workout`, params: { id: workoutId } });
@@ -37,10 +39,10 @@ const WorkoutCard = (props: WorkoutCardProps) => {
         <Text>{workout.Name}</Text>
         <Button buttonText="Start" onPress={() => redirectToWorkout(workout.Id)} />
 
-        {workout.Exersizes.map((exersize, i) => (
+        {workout.Exercises.map((exercise, i) => (
           <View style={styles.workoutRow} key={i}>
-            <Text key={i + '1'}>{exersize.Exersize}</Text>
-            <Text key={i + '2'}>{exersize.Sets.length} Sets</Text>
+            <Text key={i + '1'}>{exercise.Exercise}</Text>
+            <Text key={i + '2'}>{exercise.Sets.length} Sets</Text>
           </View>
         ))}
       </>

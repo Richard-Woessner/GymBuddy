@@ -7,7 +7,7 @@
  * @typedef {CompletedWorkout}
  */
 export interface CompletedWorkout {
-  exersizes: Exersize[];
+  exercises: Exercise[];
   date: Date;
 }
 
@@ -16,21 +16,21 @@ export interface CompletedWorkout {
  * @date 10/27/2023 - 12:00:59 PM
  *
  * @export
- * @interface Exersize
- * @typedef {Exersize}
+ * @interface Exercise
+ * @typedef {Exercise}
  */
 /**
  * Description placeholder
  * @date 10/27/2023 - 12:01:12 PM
  *
  * @export
- * @interface Exersize
- * @typedef {Exersize}
+ * @interface Exercise
+ * @typedef {Exercise}
  */
-export interface Exersize {
+export interface Exercise {
   totalWeight: number;
   totalReps: number;
-  exersizeName: string;
+  exerciseName: string;
   sets: Set[];
 }
 

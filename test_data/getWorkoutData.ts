@@ -1,9 +1,9 @@
 export const getWorkoutData = {
   Workouts: [
     {
-      Exersizes: [
+      Exercises: [
         {
-          Exersize: 'Bench Press',
+          Exercise: 'Bench Press',
           Sets: [
             {
               SetNumber: 1,
@@ -24,7 +24,7 @@ export const getWorkoutData = {
           Type: 'Lift',
         },
         {
-          Exersize: 'Deadlift',
+          Exercise: 'Deadlift',
           Type: 'Lift',
           Sets: [
             {
@@ -58,7 +58,7 @@ export const getWorkoutData = {
       Name: 'Chest Day',
     },
     {
-      Exersizes: [
+      Exercises: [
         {
           Sets: [
             {
@@ -78,7 +78,7 @@ export const getWorkoutData = {
             },
           ],
           Type: 'Lift',
-          Exersize: 'Squat',
+          Exercise: 'Squat',
         },
         {
           Sets: [
@@ -109,14 +109,14 @@ export const getWorkoutData = {
             },
           ],
           Type: 'Lift',
-          Exersize: 'Lunges',
+          Exercise: 'Lunges',
         },
       ],
       Name: 'Leg Day',
     },
     {
       Name: 'Pull day',
-      Exersizes: [
+      Exercises: [
         {
           Sets: [
             {
@@ -136,10 +136,10 @@ export const getWorkoutData = {
             },
           ],
           Type: 'Lift',
-          Exersize: 'Bench Press',
+          Exercise: 'Bench Press',
         },
         {
-          Exersize: 'Deadlift',
+          Exercise: 'Deadlift',
           Type: 'Lift',
           Sets: [
             {
@@ -172,9 +172,9 @@ export const getWorkoutData = {
       ],
     },
     {
-      Exersizes: [
+      Exercises: [
         {
-          Exersize: 'Bench Press',
+          Exercise: 'Bench Press',
           Sets: [
             {
               SetNumber: 1,
@@ -196,7 +196,7 @@ export const getWorkoutData = {
         },
         {
           Type: 'Lift',
-          Exersize: 'Deadlift',
+          Exercise: 'Deadlift',
           Sets: [
             {
               SetNumber: 1,
