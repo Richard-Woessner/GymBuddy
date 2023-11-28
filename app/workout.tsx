@@ -1,4 +1,4 @@
-import ExersizeCard from '../components/ExerciseCard';
+import ExerciseCard from '../components/ExerciseCard';
 import { View, Text } from '../components/Themed';
 import { StyleSheet } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -6,7 +6,7 @@ import { useWorkouts } from '../providers/workoutProvider';
 import { useEffect, useState } from 'react';
 import { useLogs } from '../providers/logsProvider';
 import { Workout } from '../services/workoutService';
-import { CompletedWorkout, Exersize as SessionExersize } from '@models/CompletedWorkout';
+import { CompletedWorkout, Exercise as SessionExercise } from '@models/CompletedWorkout';
 import Button from '@components/Button';
 
 const WorkoutPage = () => {
@@ -30,37 +30,37 @@ const WorkoutPage = () => {
   };
 
   const postLog = async () => {
-    if (!workout || !workout?.Exersizes) {
+    if (!workout || !workout?.Exercises) {
       alert('No workout selected');
       return;
     }
 
     let tempSession: CompletedWorkout = {
       date: new Date(),
-      exersizes: [],
+      exercises: [],
     };
 
-    workout.Exersizes.forEach((exersize) => {
-      const tempExersize: SessionExersize = {
-        exersizeName: exersize.Exersize,
+    workout.Exercises.forEach((exercise) => {
+      const tempExercise: SessionExercise = {
+        exerciseName: exercise.Exercise,
         sets: [],
         totalReps: 0,
         totalWeight: 0,
       };
 
-      exersize.Sets.forEach((set) => {
-        tempExersize.sets.push({
+      exercise.Sets.forEach((set) => {
+        tempExercise.sets.push({
           setNumber: set.SetNumber,
           reps: set.Reps,
           weight: set.Weight,
           completed: set.Completed || false,
         });
 
-        tempExersize.totalReps += set.Reps;
-        tempExersize.totalWeight += set.Weight;
+        tempExercise.totalReps += set.Reps;
+        tempExercise.totalWeight += set.Weight;
       });
 
-      tempSession.exersizes.push(tempExersize);
+      tempSession.exercises.push(tempExercise);
     });
 
     logsProvider.postLog(tempSession).then(() => {
@@ -77,28 +77,28 @@ const WorkoutPage = () => {
     <View style={styles.container}>
       <Text style={styles.title}>{workout?.Name}</Text>
 
-      {workout?.Exersizes.map((e, i) => (
-        <ExersizeCard
-          exersizeName={e.Exersize}
+      {workout?.Exercises.map((e, i) => (
+        <ExerciseCard
+          exerciseName={e.Exercise}
           sets={e.Sets}
           workout={workout}
           setWorkout={setWorkout}
         />
       ))}
 
-      <Button buttonText="Post Exersize" onPress={() => postLog()} />
+      <Button buttonText="Post Exercise" onPress={() => postLog()} />
     </View>
   );
 };
 
 const workoutsToFormState = (workout: Workout) => {
-  const checkboxes: ExersizeCheckBox[] = [];
+  const checkboxes: ExerciseCheckBox[] = [];
 
-  workout?.Exersizes.forEach((exersize) => {
-    const woName = exersize.Exersize;
-    exersize.Sets.forEach((set, i) => {
+  workout?.Exercises.forEach((exercise) => {
+    const woName = exercise.Exercise;
+    exercise.Sets.forEach((set, i) => {
       checkboxes.push({
-        exersize: woName,
+        exercise: woName,
         setNumber: i + 1,
         checked: false,
       });
@@ -108,8 +108,8 @@ const workoutsToFormState = (workout: Workout) => {
   return checkboxes;
 };
 
-export interface ExersizeCheckBox {
-  exersize: string;
+export interface ExerciseCheckBox {
+  exercise: string;
   setNumber: number;
   checked: boolean;
 }

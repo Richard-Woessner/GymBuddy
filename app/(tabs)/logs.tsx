@@ -49,14 +49,15 @@ const Logs = () => {
     return (
       <SafeAreaView>
         <View key={key} style={{ ...styles.card, ...backgroundColor }}>
-          {log.exersizes.map((exercise, i) => (
-            <View key={i}>
-              <Text style={styles.cardTitle}>{exercise.exersizeName}</Text>
-              <Text>{`Sets: ${exercise.sets.length || '-'}`}</Text>
-              <Text>{`Reps: ${exercise.totalReps || '-'}`}</Text>
-              <Text>{`Total Weight: ${exercise.totalWeight || '-'}`}</Text>
-            </View>
-          ))}
+          {log.exercises &&
+            log.exercises.map((exercise, i) => (
+              <View key={i}>
+                <Text style={styles.cardTitle}>{exercise.exerciseName}</Text>
+                <Text>{`Sets: ${exercise.sets.length || '-'}`}</Text>
+                <Text>{`Reps: ${exercise.totalReps || '-'}`}</Text>
+                <Text>{`Total Weight: ${exercise.totalWeight || '-'}`}</Text>
+              </View>
+            ))}
           <Text style={styles.date}>{dayjs(log.date).format('MMM-DD hh:mm a')}</Text>
         </View>
       </SafeAreaView>

@@ -3,23 +3,23 @@ import Checkbox from 'expo-checkbox';
 import { View, Text, TextInput } from './Themed';
 import { StyleSheet } from 'react-native';
 import { Set, Workout } from '../services/workoutService';
-import { ExersizeCheckBox } from '../app/workout';
+import { ExerciseCheckBox } from '../app/workout';
 
-interface ExersizeCardProps {
-  exersizeName: string;
+interface ExerciseCardProps {
+  exerciseName: string;
   sets: Set[];
   workout: Workout;
   setWorkout: (value: Workout) => void;
 }
 
-const ExersizeCard = (props: ExersizeCardProps) => {
-  const { exersizeName, sets, workout, setWorkout } = props;
+const ExerciseCard = (props: ExerciseCardProps) => {
+  const { exerciseName, sets, workout, setWorkout } = props;
 
   return (
     <View style={styles.container}>
-      <Text>{exersizeName}</Text>
+      <Text>{exerciseName}</Text>
 
-      <View style={styles.exersizeInfo}>
+      <View style={styles.exerciseInfo}>
         <View style={styles.reps}>
           <Text>Reps</Text>
           <Text>Weight</Text>
@@ -31,7 +31,7 @@ const ExersizeCard = (props: ExersizeCardProps) => {
             <Reps
               key={i}
               set={set}
-              exersizeName={exersizeName}
+              exerciseName={exerciseName}
               sets={sets}
               workout={workout}
               setWorkout={setWorkout}
@@ -45,22 +45,22 @@ const ExersizeCard = (props: ExersizeCardProps) => {
 
 const Reps = (props: {
   set: Set;
-  exersizeName: string;
+  exerciseName: string;
   sets: Set[];
   workout: Workout;
   setWorkout: (value: Workout) => void;
 }) => {
-  const { set, exersizeName, sets, workout, setWorkout } = props;
+  const { set, exerciseName, sets, workout, setWorkout } = props;
 
   const toggleBox = (set: Set) => {
     const tempWorkout = { ...workout };
-    const tempExersize = tempWorkout.Exersizes.find((e) => e.Exersize === exersizeName);
+    const tempExercise = tempWorkout.Exercises.find((e) => e.Exercise === exerciseName);
 
-    if (!tempExersize) {
+    if (!tempExercise) {
       return;
     }
 
-    const tempSet = tempExersize.Sets.find((s) => s === set);
+    const tempSet = tempExercise.Sets.find((s) => s === set);
 
     if (!tempSet) {
       return;
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.dark.tint,
   },
-  exersizeInfo: {
+  exerciseInfo: {
     padding: 10,
   },
   reps: {
@@ -102,4 +102,4 @@ const styles = StyleSheet.create({
   inputStyle: { textAlign: 'center', borderWidth: 1, width: 30 },
 });
 
-export default ExersizeCard;
+export default ExerciseCard;

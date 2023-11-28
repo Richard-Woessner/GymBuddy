@@ -7,11 +7,14 @@ import WorkoutCard from '../../components/home/WorkoutCard';
 import StartWorkoutButton from '../../components/home/StartWorkoutButton';
 import { useWorkouts } from '../../providers/workoutProvider';
 import Loading from '@components/Loading';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function TabOneScreen() {
   const workoutsProvider = useWorkouts();
   const { workouts, isLoading } = workoutsProvider;
   const lightMode = isLightMode();
+
+  const isFocused = useIsFocused();
 
   const [startWorkoutDrawerOpen, setstartWorkoutDrawerOpen] = useState(false);
   const [workoutCardOpen, setWorkoutCardOpen] = useState(false);
@@ -32,7 +35,7 @@ export default function TabOneScreen() {
 
   useEffect(() => {
     initData();
-  }, []);
+  }, [isFocused]);
 
   if (isLoading || !workouts) {
     return <Loading />;

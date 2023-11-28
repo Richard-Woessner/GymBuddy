@@ -27,11 +27,11 @@ export interface GetWorkoutResponse {
 export interface Workout {
   Name: string;
   Id: string;
-  Exersizes: Exersize[];
+  Exercises: Exercise[];
 }
 
-interface Exersize {
-  Exersize: string;
+interface Exercise {
+  Exercise: string;
   Sets: Set[];
   Type: string;
 }

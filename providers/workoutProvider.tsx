@@ -41,6 +41,8 @@ export const WorkoutsProvider = (props: WorkoutsProviderProps) => {
         };
       });
 
+      console.log(x);
+
       setWorkouts(x);
       tempWorkouts.push(...x);
     } catch (e) {
