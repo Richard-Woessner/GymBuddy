@@ -1,8 +1,9 @@
-import Colors from '../constants/Colors';
 import Checkbox from 'expo-checkbox';
-import { View, Text, TextInput } from './Themed';
+import { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
+import Colors from '../constants/Colors';
 import { Exercise, Set, Workout } from '../services/workoutService';
+import { Text, TextInput, View } from './Themed';
 
 interface ExerciseCardProps {
   exercise: Exercise;
@@ -10,21 +11,33 @@ interface ExerciseCardProps {
   setWorkout: (value: Workout) => void;
 }
 
+/**
+ * This is the component that displays the exercises and sets for a workout.
+ * Parent: workout.tsx
+ * @param props
+ * @returns
+ */
 const ExerciseCard = (props: ExerciseCardProps) => {
-  const { exercise, workout, setWorkout } = props;
+  const { exercise, workout } = props;
   const { Exercise, Sets, NewExercise } = exercise;
 
+  const [tempWorkout, setTempWorkout] = useState<Workout | null>(null);
+
+  const initData = async () => {
+    setTempWorkout({ ...workout });
+  };
+
   const setExercise = (exercise: Exercise) => {
-    const tempWorkout = { ...workout };
-    const tempExercise = tempWorkout.Exercises.find((e) => e.Id === exercise.Id);
+    const w = { ...tempWorkout } as Workout;
+    const tempExercise = w.Exercises!.find((e) => e.Id === exercise.Id);
 
     if (tempExercise) {
-      tempWorkout.Exercises.splice(tempWorkout.Exercises.indexOf(tempExercise), 1);
+      w.Exercises.splice(w.Exercises.indexOf(tempExercise), 1);
     }
 
-    tempWorkout.Exercises.push(exercise);
+    w.Exercises.push(exercise);
 
-    setWorkout(tempWorkout);
+    setTempWorkout(w);
   };
 
   const handleNameChange = (e: string) => {
@@ -49,18 +62,18 @@ const ExerciseCard = (props: ExerciseCardProps) => {
 
   const handleDoubleClick = () => {
     // Add a new set to the exercise
-    const tempWorkout = { ...workout };
-    const tempExercise = tempWorkout.Exercises.find((e) => e.Exercise === Exercise);
+    const w = { ...tempWorkout } as Workout;
+    const tempExercise = w.Exercises.find((e) => e.Exercise === Exercise);
     //remove the last set
     tempExercise?.Sets.pop();
 
-    setWorkout(tempWorkout);
+    setTempWorkout(w);
   };
 
   const handleLongPress = () => {
     // Add a new set to the exercise
-    const tempWorkout = { ...workout };
-    const tempExercise = tempWorkout.Exercises.find((e) => e.Exercise === Exercise);
+    const w = { ...tempWorkout } as Workout;
+    const tempExercise = w.Exercises.find((e) => e.Exercise === Exercise);
     tempExercise?.Sets.push({
       Reps: 0,
       Weight: 0,
@@ -68,8 +81,12 @@ const ExerciseCard = (props: ExerciseCardProps) => {
       SetNumber: tempExercise.Sets.length + 1,
     });
 
-    setWorkout(tempWorkout);
+    setTempWorkout(w);
   };
+
+  useEffect(() => {
+    initData();
+  }, []);
 
   if (NewExercise) {
     return (
@@ -100,8 +117,8 @@ const ExerciseCard = (props: ExerciseCardProps) => {
                 set={set}
                 exerciseName={Exercise}
                 sets={Sets}
-                workout={workout}
-                setWorkout={setWorkout}
+                workout={tempWorkout!}
+                setWorkout={setTempWorkout}
               />
             );
           })}
@@ -128,8 +145,8 @@ const ExerciseCard = (props: ExerciseCardProps) => {
               set={set}
               exerciseName={Exercise}
               sets={Sets}
-              workout={workout}
-              setWorkout={setWorkout}
+              workout={tempWorkout!}
+              setWorkout={setTempWorkout}
             />
           );
         })}
