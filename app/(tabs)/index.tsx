@@ -1,18 +1,18 @@
-import { Animated, SafeAreaView, StyleSheet } from 'react-native';
+import { Animated, FlatList, SafeAreaView, StyleSheet } from 'react-native';
 
 import { Text, View, isLightMode } from '../../components/Themed';
 import { useRef, useState, useEffect } from 'react';
-import Button from '../../components/home/HomeButton';
+import Button, { HomeWorkoutCard } from '../../components/home/HomeWorkoutCard';
 import WorkoutCard from '../../components/home/WorkoutCard';
 import StartWorkoutButton from '../../components/home/StartWorkoutButton';
 import { useWorkouts } from '../../providers/workoutProvider';
 import Loading from '@components/Loading';
 import { useIsFocused } from '@react-navigation/native';
+import { hashObject } from '../../helpers/func';
 
 export default function TabOneScreen() {
   const workoutsProvider = useWorkouts();
   const { workouts, isLoading } = workoutsProvider;
-  const lightMode = isLightMode();
 
   const isFocused = useIsFocused();
 
@@ -26,11 +26,6 @@ export default function TabOneScreen() {
 
   const initData = async () => {
     workoutsProvider.getWorkouts();
-  };
-
-  const colorStyles = {
-    backgroundColor: isLightMode() ? 'white' : 'black',
-    borderColor: !isLightMode() ? 'white' : 'black',
   };
 
   useEffect(() => {
@@ -48,20 +43,17 @@ export default function TabOneScreen() {
       <View style={styles.container}>
         <Text style={styles.title}>Home</Text>
 
-        <Button
+        {/* <Button
           buttonStyle={styles.buttonStyle}
           buttonText="Start a workout"
           onPress={() => setstartWorkoutDrawerOpen(!startWorkoutDrawerOpen)}
           translateYStart={translateYStart}
-        />
+        /> */}
 
-        <View style={styles.cards}>
+        {/* <View style={styles.cards}>
           {workouts.map((workout, i) => (
-            <Button
+            <HomeWorkoutCard
               key={i}
-              buttonStyle={
-                lightMode ? styles.lightworkoutbuttonStyle : styles.darkworkoutbuttonStyle
-              }
               buttonText={workout.Name}
               onPress={() => {
                 setWorkoutCardOpen(!workoutCardOpen);
@@ -70,7 +62,33 @@ export default function TabOneScreen() {
               translateYStart={translateYWorkout}
             />
           ))}
-        </View>
+        </View> */}
+
+        {/* Create a scrollable flatlist with HomeWorkoutCard */}
+
+        <FlatList
+          style={{ width: '100%', height: '100%' }}
+          data={workouts}
+          renderItem={({ item }) => {
+            const wo = item;
+            const i = workouts.indexOf(wo);
+
+            console.log('workout', wo.Name, i);
+
+            return (
+              <HomeWorkoutCard
+                key={i}
+                buttonText={wo.Name}
+                onPress={() => {
+                  setWorkoutCardOpen(!workoutCardOpen);
+                  setWorkout(i);
+                }}
+                translateYStart={translateYWorkout}
+              />
+            );
+          }}
+          keyExtractor={(item) => hashObject(item).toString()}
+        />
 
         <StartWorkoutButton
           open={startWorkoutDrawerOpen}
@@ -91,10 +109,11 @@ export default function TabOneScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    flexDirection: 'column',
+    width: '100%',
+    height: '100%',
     alignItems: 'center',
     justifyContent: 'flex-start',
+    paddingTop: 20,
   },
   title: {
     fontSize: 20,
@@ -119,23 +138,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     height: 'auto',
-  },
-  lightworkoutbuttonStyle: {
-    borderRadius: 10,
-    padding: 30,
-    marginTop: 50,
-    borderWidth: 2,
-    borderColor: 'black',
-    width: 'auto',
-  },
-  darkworkoutbuttonStyle: {
-    borderRadius: 10,
-    padding: 30,
-    marginTop: 50,
-    borderWidth: 2,
-    borderColor: 'white',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   workoutpopupContainer: {
     flex: 0,

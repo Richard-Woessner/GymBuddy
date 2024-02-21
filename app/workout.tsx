@@ -1,6 +1,6 @@
 import ExerciseCard from '../components/ExerciseCard';
 import { View, Text } from '../components/Themed';
-import { StyleSheet } from 'react-native';
+import { Alert, StyleSheet } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useWorkouts } from '../providers/workoutProvider';
 import { useEffect, useState } from 'react';
@@ -19,18 +19,6 @@ const WorkoutPage = () => {
 
   const [workout, setWorkout] = useState<Workout | null>(null);
 
-  const fakeWorkout: Workout = {
-    Name: 'TETESTESTEST',
-    Id: 'fake',
-    Exercises: [],
-  };
-
-  const fakeSet = {
-    SetNumber: 0,
-    Reps: 0,
-    Weight: 0,
-  };
-
   const initData = async () => {
     const tempWorkout = workouts?.find((w) => w.Id === id);
 
@@ -39,8 +27,6 @@ const WorkoutPage = () => {
     }
 
     setWorkout(tempWorkout);
-
-    const checkboxes = workoutsToFormState(workout!);
   };
 
   const postLog = async () => {
@@ -99,6 +85,11 @@ const WorkoutPage = () => {
     });
 
     setWorkout(newWorkout);
+
+    Alert.alert(
+      'New Exercise Added',
+      "You can now edit the exercise's name and sets. Long press to add a set, double press to remove the set."
+    );
   };
 
   useEffect(() => {
