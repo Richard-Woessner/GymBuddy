@@ -1,0 +1,4 @@
+- [ ] Add Exersize card
+- [ ] Add Sets to Exersize
+- [x] Reformat home page
+- [ ] \

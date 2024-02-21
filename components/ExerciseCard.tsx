@@ -1,7 +1,7 @@
 import Colors from '../constants/Colors';
 import Checkbox from 'expo-checkbox';
 import { View, Text, TextInput } from './Themed';
-import { NativeSyntheticEvent, StyleSheet, TextInputChangeEventData } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Exercise, Set, Workout } from '../services/workoutService';
 
 interface ExerciseCardProps {
@@ -13,8 +13,6 @@ interface ExerciseCardProps {
 const ExerciseCard = (props: ExerciseCardProps) => {
   const { exercise, workout, setWorkout } = props;
   const { Exercise, Sets, NewExercise } = exercise;
-
-  console.log(NewExercise);
 
   const setExercise = (exercise: Exercise) => {
     const tempWorkout = { ...workout };
@@ -30,14 +28,56 @@ const ExerciseCard = (props: ExerciseCardProps) => {
   };
 
   const handleNameChange = (e: string) => {
-    console.log(e);
-
     setExercise({ ...exercise, Exercise: e });
+  };
+
+  let timer: NodeJS.Timeout | null = null;
+
+  const handleClick = () => {
+    if (timer !== null) {
+      //add a triple click
+
+      clearTimeout(timer);
+      timer = null;
+      handleDoubleClick();
+    } else {
+      timer = setTimeout(() => {
+        timer = null;
+      }, 300);
+    }
+  };
+
+  const handleDoubleClick = () => {
+    // Add a new set to the exercise
+    const tempWorkout = { ...workout };
+    const tempExercise = tempWorkout.Exercises.find((e) => e.Exercise === Exercise);
+    //remove the last set
+    tempExercise?.Sets.pop();
+
+    setWorkout(tempWorkout);
+  };
+
+  const handleLongPress = () => {
+    // Add a new set to the exercise
+    const tempWorkout = { ...workout };
+    const tempExercise = tempWorkout.Exercises.find((e) => e.Exercise === Exercise);
+    tempExercise?.Sets.push({
+      Reps: 0,
+      Weight: 0,
+      Completed: false,
+      SetNumber: tempExercise.Sets.length + 1,
+    });
+
+    setWorkout(tempWorkout);
   };
 
   if (NewExercise) {
     return (
-      <View style={styles.container}>
+      <TouchableOpacity
+        onLongPress={handleLongPress}
+        onPress={handleClick}
+        style={styles.container}
+      >
         <TextInput
           onEndEditing={(e: any) => {
             handleNameChange(e.nativeEvent.text);
@@ -66,7 +106,7 @@ const ExerciseCard = (props: ExerciseCardProps) => {
             );
           })}
         </View>
-      </View>
+      </TouchableOpacity>
     );
   }
 
