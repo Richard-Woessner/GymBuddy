@@ -1,25 +1,27 @@
-import { StyleSheet, Image, TextInput, Pressable } from 'react-native';
+import { Image, Pressable, StyleSheet, TextInput } from 'react-native';
 
-import { Text, View } from '../../components/Themed';
-import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import Button from '@components/Button';
+import { useState } from 'react';
+import { Text, View } from '../../components/Themed';
 
 export default function Profile() {
   const [edit, setEdit] = useState(false);
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>{dummydata.name}</Text>
+        <Pressable
+          onPress={() => {
+            setEdit(!edit);
+          }}
+        >
+          <Ionicons name="settings" size={32} color="green" />
+        </Pressable>
+      </View>
+
       <Image style={{ width: 100, height: 100, borderRadius: 50 }} source={{ uri: dummypicUrl }} />
 
-      <Pressable
-        onPress={() => {
-          console.log('pressed');
-        }}
-      >
-        <Ionicons name="settings" size={32} color="green" />
-      </Pressable>
-      <Text style={styles.title}>{dummydata.name}</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <View style={styles.userInfo}>
         {Object.entries(dummydata.info).map((info, i) => {
@@ -32,12 +34,6 @@ export default function Profile() {
           );
         })}
       </View>
-      <Button
-        buttonText="Edit"
-        onPress={() => {
-          setEdit(!edit);
-        }}
-      />
     </View>
   );
 }
@@ -95,6 +91,13 @@ const styles = StyleSheet.create({
   },
   stat: {
     fontSize: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
 });
 

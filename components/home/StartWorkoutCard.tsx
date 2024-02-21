@@ -23,7 +23,6 @@ const StartWorkoutCard = (props: StartWorkoutCardProps) => {
   const lightMode = isLightMode();
 
   const initData = async () => {
-    console.log('workoutIndex', workoutIndex);
     setTempWorkout(workouts![workoutIndex!]);
   };
 
