@@ -1,4 +1,4 @@
-export const getWorkoutData = {
+export const WorkoutDummy = {
   Workouts: [
     {
       Exercises: [

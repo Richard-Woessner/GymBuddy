@@ -6,8 +6,10 @@ import { useWorkouts } from '../providers/workoutProvider';
 import { useEffect, useState } from 'react';
 import { useLogs } from '../providers/logsProvider';
 import { Workout } from '../services/workoutService';
-import { CompletedWorkout, Exercise as SessionExercise } from '@models/CompletedWorkout';
+import { CompletedWorkout, Exercise, Exercise as SessionExercise } from '@models/CompletedWorkout';
 import Button from '@components/Button';
+import { BlurView } from 'expo-blur';
+import { hashObject } from '../helpers/func';
 
 const WorkoutPage = () => {
   const workoutsProvider = useWorkouts();
@@ -16,6 +18,18 @@ const WorkoutPage = () => {
   const { id } = useLocalSearchParams();
 
   const [workout, setWorkout] = useState<Workout | null>(null);
+
+  const fakeWorkout: Workout = {
+    Name: 'TETESTESTEST',
+    Id: 'fake',
+    Exercises: [],
+  };
+
+  const fakeSet = {
+    SetNumber: 0,
+    Reps: 0,
+    Weight: 0,
+  };
 
   const initData = async () => {
     const tempWorkout = workouts?.find((w) => w.Id === id);
@@ -69,6 +83,24 @@ const WorkoutPage = () => {
     });
   };
 
+  const addNewExercise = () => {
+    if (!workout) {
+      return;
+    }
+
+    const newWorkout = { ...workout };
+
+    newWorkout.Exercises.push({
+      Exercise: 'New Exercise',
+      Sets: [{ SetNumber: 1, Reps: 1, Weight: 100 }],
+      Type: 'Strength',
+      NewExercise: true,
+      Id: 'asdfasdf',
+    });
+
+    setWorkout(newWorkout);
+  };
+
   useEffect(() => {
     initData();
   }, []);
@@ -77,15 +109,11 @@ const WorkoutPage = () => {
     <View style={styles.container}>
       <Text style={styles.title}>{workout?.Name}</Text>
 
-      {workout?.Exercises.map((e, i) => (
-        <ExerciseCard
-          exerciseName={e.Exercise}
-          sets={e.Sets}
-          workout={workout}
-          setWorkout={setWorkout}
-        />
+      {workout?.Exercises.map((e: Exercise) => (
+        <ExerciseCard key={hashObject(e)} exercise={e} workout={workout} setWorkout={setWorkout} />
       ))}
 
+      <Button buttonText="Add Exercise" onPress={() => addNewExercise()} />
       <Button buttonText="Post Exercise" onPress={() => postLog()} />
     </View>
   );

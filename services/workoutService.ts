@@ -1,4 +1,3 @@
-import { getWorkoutData } from '../test_data/getWorkoutData';
 import { AxiosService } from './axiosService';
 
 class WorkoutService extends AxiosService {
@@ -14,7 +13,6 @@ class WorkoutService extends AxiosService {
       return data;
     } catch (e) {
       console.error(e);
-      return getWorkoutData as GetWorkoutResponse;
     }
   }
 }
@@ -28,12 +26,15 @@ export interface Workout {
   Name: string;
   Id: string;
   Exercises: Exercise[];
+  Completed?: boolean;
 }
 
-interface Exercise {
+export interface Exercise {
+  Id: string;
   Exercise: string;
   Sets: Set[];
   Type: string;
+  NewExercise?: boolean;
 }
 
 export interface Set {
