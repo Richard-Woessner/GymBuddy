@@ -1,23 +1,78 @@
 import Colors from '../constants/Colors';
 import Checkbox from 'expo-checkbox';
 import { View, Text, TextInput } from './Themed';
-import { StyleSheet } from 'react-native';
-import { Set, Workout } from '../services/workoutService';
-import { ExerciseCheckBox } from '../app/workout';
+import { NativeSyntheticEvent, StyleSheet, TextInputChangeEventData } from 'react-native';
+import { Exercise, Set, Workout } from '../services/workoutService';
 
 interface ExerciseCardProps {
-  exerciseName: string;
-  sets: Set[];
+  exercise: Exercise;
   workout: Workout;
   setWorkout: (value: Workout) => void;
 }
 
 const ExerciseCard = (props: ExerciseCardProps) => {
-  const { exerciseName, sets, workout, setWorkout } = props;
+  const { exercise, workout, setWorkout } = props;
+  const { Exercise, Sets, NewExercise } = exercise;
+
+  console.log(NewExercise);
+
+  const setExercise = (exercise: Exercise) => {
+    const tempWorkout = { ...workout };
+    const tempExercise = tempWorkout.Exercises.find((e) => e.Id === exercise.Id);
+
+    if (tempExercise) {
+      tempWorkout.Exercises.splice(tempWorkout.Exercises.indexOf(tempExercise), 1);
+    }
+
+    tempWorkout.Exercises.push(exercise);
+
+    setWorkout(tempWorkout);
+  };
+
+  const handleNameChange = (e: string) => {
+    console.log(e);
+
+    setExercise({ ...exercise, Exercise: e });
+  };
+
+  if (NewExercise) {
+    return (
+      <View style={styles.container}>
+        <TextInput
+          onEndEditing={(e: any) => {
+            handleNameChange(e.nativeEvent.text);
+          }}
+        >
+          {Exercise}
+        </TextInput>
+
+        <View style={styles.exerciseInfo}>
+          <View style={styles.reps}>
+            <Text>Reps</Text>
+            <Text>Weight</Text>
+            <Text>Completed</Text>
+          </View>
+
+          {exercise.Sets.map((set, i) => {
+            return (
+              <Reps
+                key={i}
+                set={set}
+                exerciseName={Exercise}
+                sets={Sets}
+                workout={workout}
+                setWorkout={setWorkout}
+              />
+            );
+          })}
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      <Text>{exerciseName}</Text>
+      <Text>{Exercise}</Text>
 
       <View style={styles.exerciseInfo}>
         <View style={styles.reps}>
@@ -26,13 +81,13 @@ const ExerciseCard = (props: ExerciseCardProps) => {
           <Text>Completed</Text>
         </View>
 
-        {sets.map((set, i) => {
+        {exercise.Sets.map((set, i) => {
           return (
             <Reps
               key={i}
               set={set}
-              exerciseName={exerciseName}
-              sets={sets}
+              exerciseName={Exercise}
+              sets={Sets}
               workout={workout}
               setWorkout={setWorkout}
             />
@@ -89,6 +144,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     borderWidth: 1,
     borderColor: Colors.dark.tint,
+    paddingHorizontal: 4,
   },
   exerciseInfo: {
     padding: 10,
@@ -97,7 +153,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
     justifyContent: 'space-around',
-    paddingBottom: 2,
+    paddingBottom: 4,
   },
   inputStyle: { textAlign: 'center', borderWidth: 1, width: 30 },
 });

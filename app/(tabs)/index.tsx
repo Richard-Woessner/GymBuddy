@@ -34,7 +34,9 @@ export default function TabOneScreen() {
   };
 
   useEffect(() => {
-    initData();
+    if (workoutsProvider.workouts === null) {
+      initData();
+    }
   }, [isFocused]);
 
   if (isLoading || !workouts) {
