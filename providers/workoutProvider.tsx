@@ -1,7 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
-import { Exercise, Workout, workoutService } from '../services/workoutService';
-import { WorkoutDummy } from '../test_data/getWorkoutData';
 import { hashObject } from '../helpers/func';
+import { Exercise, Workout, workoutService } from '../services/workoutService';
 
 interface WorkoutsContextType {
   workouts: Workout[] | null;
@@ -36,23 +35,24 @@ export const WorkoutsProvider = (props: WorkoutsProviderProps) => {
 
     try {
       setIsLoading(true);
-      //TODO: Uncomment this when the backend is ready
 
-      // const workoutres = await workoutService.getWorkouts();
+      const workoutres = await workoutService.getWorkouts();
 
-      // const x = workoutres!.Workouts.map((workout, i) => {
-      //   return {
-      //     ...workout,
-      //     Id: i.toString(),
-      //   };
-      // });
-
-      const x = WorkoutDummy.Workouts.map((workout, i) => {
+      const x = workoutres!.Workouts.map((workout, i) => {
         return {
           ...workout,
           Id: i.toString(),
-        } as Workout;
+        };
       });
+
+      console.log('Workouts returned', x.length);
+
+      // const x = WorkoutDummy.Workouts.map((workout, i) => {
+      //   return {
+      //     ...workout,
+      //     Id: i.toString(),
+      //   } as Workout;
+      // });
 
       x.forEach((workout) => {
         workout.Exercises.forEach((exercise: Exercise) => {
@@ -78,10 +78,9 @@ export const WorkoutsProvider = (props: WorkoutsProviderProps) => {
       workouts,
       isLoading,
 
-      setWorkouts,
       getWorkouts,
     }),
-    [workouts, isLoading, setWorkouts, getWorkouts]
+    [workouts, isLoading, getWorkouts]
   );
 
   return <WorkoutsContext.Provider value={values}>{props.children}</WorkoutsContext.Provider>;

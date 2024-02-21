@@ -1,14 +1,14 @@
 import { Animated, FlatList, SafeAreaView, StyleSheet } from 'react-native';
 
-import { Text, View, isLightMode } from '../../components/Themed';
-import { useRef, useState, useEffect } from 'react';
-import Button, { HomeWorkoutCard } from '../../components/home/HomeWorkoutCard';
-import WorkoutCard from '../../components/home/WorkoutCard';
-import StartWorkoutButton from '../../components/home/StartWorkoutButton';
-import { useWorkouts } from '../../providers/workoutProvider';
 import Loading from '@components/Loading';
 import { useIsFocused } from '@react-navigation/native';
+import { useEffect, useRef, useState } from 'react';
+import { Text, View } from '../../components/Themed';
+import { HomeWorkoutCard } from '../../components/home/HomeWorkoutCard';
+import StartWorkoutButton from '../../components/home/StartWorkoutButton';
+import StartWorkoutCard from '../../components/home/StartWorkoutCard';
 import { hashObject } from '../../helpers/func';
+import { useWorkouts } from '../../providers/workoutProvider';
 
 export default function TabOneScreen() {
   const workoutsProvider = useWorkouts();
@@ -22,7 +22,7 @@ export default function TabOneScreen() {
   const translateYStart = useRef(new Animated.Value(300)).current;
   const translateYWorkout = useRef(new Animated.Value(300)).current;
 
-  const [workout, setWorkout] = useState<number | null>(null);
+  const [workoutIndex, setWorkoutIndex] = useState<number | null>(null);
 
   const initData = async () => {
     workoutsProvider.getWorkouts();
@@ -30,6 +30,7 @@ export default function TabOneScreen() {
 
   useEffect(() => {
     if (workoutsProvider.workouts === null) {
+      console.log('workoutsProvider.workouts is null, calling initData on Index');
       initData();
     }
   }, [isFocused]);
@@ -43,29 +44,6 @@ export default function TabOneScreen() {
       <View style={styles.container}>
         <Text style={styles.title}>Home</Text>
 
-        {/* <Button
-          buttonStyle={styles.buttonStyle}
-          buttonText="Start a workout"
-          onPress={() => setstartWorkoutDrawerOpen(!startWorkoutDrawerOpen)}
-          translateYStart={translateYStart}
-        /> */}
-
-        {/* <View style={styles.cards}>
-          {workouts.map((workout, i) => (
-            <HomeWorkoutCard
-              key={i}
-              buttonText={workout.Name}
-              onPress={() => {
-                setWorkoutCardOpen(!workoutCardOpen);
-                setWorkout(i);
-              }}
-              translateYStart={translateYWorkout}
-            />
-          ))}
-        </View> */}
-
-        {/* Create a scrollable flatlist with HomeWorkoutCard */}
-
         <FlatList
           style={{ width: '100%', height: '100%' }}
           data={workouts}
@@ -73,15 +51,14 @@ export default function TabOneScreen() {
             const wo = item;
             const i = workouts.indexOf(wo);
 
-            console.log('workout', wo.Name, i);
-
             return (
               <HomeWorkoutCard
                 key={i}
                 buttonText={wo.Name}
                 onPress={() => {
+                  console.log('Pressed workout', wo.Name);
                   setWorkoutCardOpen(!workoutCardOpen);
-                  setWorkout(i);
+                  setWorkoutIndex(i);
                 }}
                 translateYStart={translateYWorkout}
               />
@@ -96,11 +73,11 @@ export default function TabOneScreen() {
           translateYStart={translateYStart}
         />
 
-        <WorkoutCard
+        <StartWorkoutCard
           open={workoutCardOpen}
           setOpen={setWorkoutCardOpen}
           translateYStart={translateYWorkout}
-          workout={workouts[workout || 0]}
+          workoutIndex={workoutIndex}
         />
       </View>
     </SafeAreaView>

@@ -1,23 +1,27 @@
-import ExerciseCard from '../components/ExerciseCard';
-import { View, Text } from '../components/Themed';
-import { Alert, StyleSheet } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
-import { useWorkouts } from '../providers/workoutProvider';
-import { useEffect, useState } from 'react';
-import { useLogs } from '../providers/logsProvider';
-import { Workout } from '../services/workoutService';
-import { CompletedWorkout, Exercise, Exercise as SessionExercise } from '@models/CompletedWorkout';
 import Button from '@components/Button';
-import { BlurView } from 'expo-blur';
+import { CompletedWorkout, Exercise, Exercise as SessionExercise } from '@models/CompletedWorkout';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Alert, StyleSheet } from 'react-native';
+import ExerciseCard from '../components/ExerciseCard';
+import { Text, View } from '../components/Themed';
 import { hashObject } from '../helpers/func';
+import { useLogs } from '../providers/logsProvider';
+import { useWorkouts } from '../providers/workoutProvider';
+import { Workout } from '../services/workoutService';
 
+/**
+ * Represents the WorkoutPage component.
+ * This component displays a workout and allows users to add exercises and post logs.
+ * This is the card that allows the user to check off exercises and post the log.
+ */
 const WorkoutPage = () => {
   const workoutsProvider = useWorkouts();
   const logsProvider = useLogs();
   const { workouts } = workoutsProvider;
   const { id } = useLocalSearchParams();
 
-  const [workout, setWorkout] = useState<Workout | null>(null);
+  const [workout, setTempWorkout] = useState<Workout | null>(null);
 
   const initData = async () => {
     const tempWorkout = workouts?.find((w) => w.Id === id);
@@ -26,7 +30,7 @@ const WorkoutPage = () => {
       return;
     }
 
-    setWorkout(tempWorkout);
+    setTempWorkout(tempWorkout);
   };
 
   const postLog = async () => {
@@ -84,7 +88,7 @@ const WorkoutPage = () => {
       Id: 'asdfasdf',
     });
 
-    setWorkout(newWorkout);
+    setTempWorkout(newWorkout);
 
     Alert.alert(
       'New Exercise Added',
@@ -101,30 +105,18 @@ const WorkoutPage = () => {
       <Text style={styles.title}>{workout?.Name}</Text>
 
       {workout?.Exercises.map((e: Exercise) => (
-        <ExerciseCard key={hashObject(e)} exercise={e} workout={workout} setWorkout={setWorkout} />
+        <ExerciseCard
+          key={hashObject(e)}
+          exercise={e}
+          workout={workout}
+          setWorkout={setTempWorkout}
+        />
       ))}
 
       <Button buttonText="Add Exercise" onPress={() => addNewExercise()} />
       <Button buttonText="Post Exercise" onPress={() => postLog()} />
     </View>
   );
-};
-
-const workoutsToFormState = (workout: Workout) => {
-  const checkboxes: ExerciseCheckBox[] = [];
-
-  workout?.Exercises.forEach((exercise) => {
-    const woName = exercise.Exercise;
-    exercise.Sets.forEach((set, i) => {
-      checkboxes.push({
-        exercise: woName,
-        setNumber: i + 1,
-        checked: false,
-      });
-    });
-  });
-
-  return checkboxes;
 };
 
 export interface ExerciseCheckBox {
