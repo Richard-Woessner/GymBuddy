@@ -115,7 +115,7 @@ const ExerciseCard = (props: ExerciseCardProps) => {
               <Reps
                 key={i}
                 set={set}
-                exerciseName={Exercise}
+                exerciseId={exercise.Id}
                 sets={Sets}
                 workout={tempWorkout!}
                 setWorkout={setTempWorkout}
@@ -143,7 +143,7 @@ const ExerciseCard = (props: ExerciseCardProps) => {
             <Reps
               key={i}
               set={set}
-              exerciseName={Exercise}
+              exerciseId={exercise.Id}
               sets={Sets}
               workout={tempWorkout!}
               setWorkout={setTempWorkout}
@@ -157,16 +157,16 @@ const ExerciseCard = (props: ExerciseCardProps) => {
 
 const Reps = (props: {
   set: Set;
-  exerciseName: string;
+  exerciseId: string;
   sets: Set[];
   workout: Workout;
   setWorkout: (value: Workout) => void;
 }) => {
-  const { set, exerciseName, sets, workout, setWorkout } = props;
+  const { set, exerciseId, sets, workout, setWorkout } = props;
 
   const toggleBox = (set: Set) => {
     const tempWorkout = { ...workout };
-    const tempExercise = tempWorkout.Exercises.find((e) => e.Exercise === exerciseName);
+    const tempExercise = tempWorkout.Exercises.find((e) => e.Id === exerciseId);
 
     if (!tempExercise) {
       return;

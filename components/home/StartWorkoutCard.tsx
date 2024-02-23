@@ -1,4 +1,5 @@
 import Button from '@components/Button';
+import { deepCopy } from '@helpers/func';
 import { router } from 'expo-router';
 import { Animated, StyleSheet } from 'react-native';
 import { useWorkouts } from '../../providers/workoutProvider';
@@ -19,7 +20,7 @@ const StartWorkoutCard = (props: StartWorkoutCardProps) => {
 
   const lightMode = isLightMode();
 
-  const workout = workouts![workoutIndex! ?? 0];
+  const workout = deepCopy(workouts![workoutIndex! ?? 0]);
 
   const redirectToWorkout = (workoutId: string) => {
     setOpen(false);
