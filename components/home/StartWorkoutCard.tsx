@@ -1,9 +1,7 @@
 import Button from '@components/Button';
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
 import { Animated, StyleSheet } from 'react-native';
 import { useWorkouts } from '../../providers/workoutProvider';
-import { Workout } from '../../services/workoutService';
 import DrawerCard from '../DrawerCards';
 import { Text, View, isLightMode } from '../Themed';
 
@@ -18,24 +16,17 @@ const StartWorkoutCard = (props: StartWorkoutCardProps) => {
   const workoutsProvider = useWorkouts();
   const { workouts } = workoutsProvider;
   const { open, setOpen, translateYStart, workoutIndex } = props;
-  const [tempWorkout, setTempWorkout] = useState<Workout | null>(null);
 
   const lightMode = isLightMode();
 
-  const initData = async () => {
-    setTempWorkout(workouts![workoutIndex!]);
-  };
+  const workout = workouts![workoutIndex! ?? 0];
 
   const redirectToWorkout = (workoutId: string) => {
     setOpen(false);
     router.push({ pathname: `/workout`, params: { id: workoutId } });
   };
 
-  useEffect(() => {
-    initData();
-  }, [workoutIndex]);
-
-  if (!tempWorkout) {
+  if (!workout || !open) {
     return null;
   }
 
@@ -48,10 +39,10 @@ const StartWorkoutCard = (props: StartWorkoutCardProps) => {
       style={lightMode ? styles.lightWorkoutpopupContainer : styles.darkWorkoutpopupContainer}
     >
       <>
-        <Text>{tempWorkout.Name}</Text>
-        <Button buttonText="Start" onPress={() => redirectToWorkout(tempWorkout.Id)} />
+        <Text>{workout.Name}</Text>
+        <Button buttonText="Start" onPress={() => redirectToWorkout(workout.Id)} />
 
-        {tempWorkout.Exercises.map((exercise, i) => (
+        {workout.Exercises.map((exercise, i) => (
           <View style={styles.workoutRow} key={i}>
             <Text key={i + '1'}>{exercise.Exercise}</Text>
             <Text key={i + '2'}>{exercise.Sets.length} Sets</Text>
