@@ -1,5 +1,5 @@
-import { Animated, Pressable, StyleProp, StyleSheet, ViewStyle } from 'react-native';
-import { Text, View, isLightMode } from '../Themed';
+import { Animated, Pressable, StyleSheet } from 'react-native';
+import { Text, isLightMode } from '../Themed';
 
 interface HomeWorkoutCard {
   buttonText: string;
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
   lightworkoutbuttonStyle: {
     borderRadius: 10,
     padding: 30,
-    marginTop: 50,
+    marginTop: 5,
     borderWidth: 2,
     borderColor: 'black',
     width: '100%',
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   darkworkoutbuttonStyle: {
     borderRadius: 10,
     padding: 30,
-    marginTop: 50,
+    marginTop: 5,
     borderWidth: 2,
     borderColor: 'white',
     alignItems: 'center',
