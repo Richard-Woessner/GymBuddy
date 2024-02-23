@@ -1,11 +1,11 @@
 import Button from '@components/Button';
+import { deepCopy, generateRandomString, hashObject } from '@helpers/func';
 import { CompletedWorkout, Exercise, Exercise as SessionExercise } from '@models/CompletedWorkout';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Alert, StyleSheet } from 'react-native';
 import ExerciseCard from '../components/ExerciseCard';
 import { Text, View } from '../components/Themed';
-import { deepCopy, hashObject } from '../helpers/func';
 import { useLogs } from '../providers/logsProvider';
 import { useWorkouts } from '../providers/workoutProvider';
 import { Workout } from '../services/workoutService';
@@ -85,7 +85,7 @@ const WorkoutPage = () => {
       Sets: [{ SetNumber: 1, Reps: 1, Weight: 100 }],
       Type: 'Strength',
       NewExercise: true,
-      Id: 'asdfasdf',
+      Id: generateRandomString(),
     });
 
     setTempWorkout(newWorkout);
