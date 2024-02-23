@@ -8,3 +8,7 @@ export const hashString = (s: string): number => {
 export const hashObject = (o: any): number => {
   return hashString(JSON.stringify(o));
 };
+
+export const deepCopy = (o: any): any => {
+  return JSON.parse(JSON.stringify(o));
+};

@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { Alert, StyleSheet } from 'react-native';
 import ExerciseCard from '../components/ExerciseCard';
 import { Text, View } from '../components/Themed';
-import { hashObject } from '../helpers/func';
+import { deepCopy, hashObject } from '../helpers/func';
 import { useLogs } from '../providers/logsProvider';
 import { useWorkouts } from '../providers/workoutProvider';
 import { Workout } from '../services/workoutService';
@@ -21,20 +21,20 @@ const WorkoutPage = () => {
   const { workouts } = workoutsProvider;
   const { id } = useLocalSearchParams();
 
-  const [workout, setTempWorkout] = useState<Workout | null>(null);
+  const [tempWorkout, setTempWorkout] = useState<Workout | null>(null);
 
   const initData = async () => {
-    const tempWorkout = workouts?.find((w) => w.Id === id);
+    const tempWorkout = deepCopy(workouts?.find((w) => w.Id === id));
 
     if (!tempWorkout) {
       return;
     }
 
-    setTempWorkout(tempWorkout);
+    setTempWorkout({ ...tempWorkout });
   };
 
   const postLog = async () => {
-    if (!workout || !workout?.Exercises) {
+    if (!tempWorkout || !tempWorkout?.Exercises) {
       alert('No workout selected');
       return;
     }
@@ -44,7 +44,7 @@ const WorkoutPage = () => {
       exercises: [],
     };
 
-    workout.Exercises.forEach((exercise) => {
+    tempWorkout.Exercises.forEach((exercise) => {
       const tempExercise: SessionExercise = {
         exerciseName: exercise.Exercise,
         sets: [],
@@ -74,11 +74,11 @@ const WorkoutPage = () => {
   };
 
   const addNewExercise = () => {
-    if (!workout) {
+    if (!tempWorkout) {
       return;
     }
 
-    const newWorkout = { ...workout };
+    const newWorkout = { ...tempWorkout };
 
     newWorkout.Exercises.push({
       Exercise: 'New Exercise',
@@ -102,13 +102,13 @@ const WorkoutPage = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{workout?.Name}</Text>
+      <Text style={styles.title}>{tempWorkout?.Name}</Text>
 
-      {workout?.Exercises.map((e: Exercise) => (
+      {tempWorkout?.Exercises.map((e: Exercise) => (
         <ExerciseCard
           key={hashObject(e)}
           exercise={e}
-          workout={workout}
+          workout={tempWorkout}
           setWorkout={setTempWorkout}
         />
       ))}
