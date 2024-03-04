@@ -51,9 +51,14 @@ export default function TabOneScreen() {
             const wo = item;
             const i = workouts.indexOf(wo);
 
+            if (wo.Display === false) {
+              return null;
+            }
+
             return (
               <HomeWorkoutCard
                 key={i}
+                workout={wo}
                 buttonText={wo.Name}
                 onPress={() => {
                   console.log('Pressed workout', wo.Name);

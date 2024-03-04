@@ -1,12 +1,12 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
-import { hashObject } from '../helpers/func';
-import { Exercise, Workout, workoutService } from '../services/workoutService';
+import { GetWorkoutsResponse, Workout, workoutService } from '../services/workoutService';
 
 interface WorkoutsContextType {
   workouts: Workout[] | null;
   isLoading: boolean;
 
   getWorkouts: () => Promise<Workout[]>;
+  deleteWorkout: (workout: Workout) => Promise<boolean>;
 }
 
 const initialValues: WorkoutsContextType = {
@@ -14,6 +14,10 @@ const initialValues: WorkoutsContextType = {
   isLoading: false,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getWorkouts: function (): Promise<Workout[]> {
+    throw new Error('Function not implemented.');
+  },
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  deleteWorkout: function (): Promise<boolean> {
     throw new Error('Function not implemented.');
   },
 };
@@ -38,29 +42,16 @@ export const WorkoutsProvider = (props: WorkoutsProviderProps) => {
 
       const workoutres = await workoutService.getWorkouts();
 
-      const x = workoutres!.Workouts.map((workout, i) => {
-        return {
-          ...workout,
-          Id: i.toString(),
-        };
+      console.log(workoutres);
+
+      let x = workoutres!.Workouts;
+
+      x = x.map((w) => {
+        w.Display = true;
+        return w;
       });
 
-      console.log('Workouts returned', x.length);
-
-      // const x = WorkoutDummy.Workouts.map((workout, i) => {
-      //   return {
-      //     ...workout,
-      //     Id: i.toString(),
-      //   } as Workout;
-      // });
-
-      x.forEach((workout) => {
-        workout.Exercises.forEach((exercise: Exercise) => {
-          exercise.Id = hashObject(exercise).toString();
-
-          return exercise;
-        });
-      });
+      console.log(x);
 
       setWorkouts(x);
       //setWorkouts(x);
@@ -73,14 +64,38 @@ export const WorkoutsProvider = (props: WorkoutsProviderProps) => {
     }
   }, []);
 
+  const deleteWorkout = useCallback(async (workout: Workout) => {
+    try {
+      setIsLoading(true);
+
+      const workoutres = (await workoutService.deleteWorkout(workout.Id)) as GetWorkoutsResponse;
+
+      if (!workoutres) {
+        return false;
+      }
+
+      console.log(workoutres);
+
+      setWorkouts(workoutres.Workouts);
+
+      return true;
+    } catch (e) {
+      console.error(e);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   const values = useMemo(
     () => ({
       workouts,
       isLoading,
 
       getWorkouts,
+      deleteWorkout,
     }),
-    [workouts, isLoading, getWorkouts]
+    [workouts, isLoading, getWorkouts, deleteWorkout]
   );
 
   return <WorkoutsContext.Provider value={values}>{props.children}</WorkoutsContext.Provider>;
