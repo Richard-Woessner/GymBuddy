@@ -3,6 +3,7 @@ import { deepCopy } from '@helpers/func';
 import { router } from 'expo-router';
 import { Animated, StyleSheet } from 'react-native';
 import { useWorkouts } from '../../providers/workoutProvider';
+import { Workout } from '../../services/workoutService';
 import DrawerCard from '../DrawerCards';
 import { Text, View, isLightMode } from '../Themed';
 
@@ -20,7 +21,7 @@ const StartWorkoutCard = (props: StartWorkoutCardProps) => {
 
   const lightMode = isLightMode();
 
-  const workout = deepCopy(workouts![workoutIndex! ?? 0]);
+  const workout: Workout = deepCopy(workouts![workoutIndex! ?? 0]);
 
   const redirectToWorkout = (workoutId: string) => {
     setOpen(false);

@@ -8,7 +8,7 @@ class LogsService extends AxiosService {
 
   async getLogs() {
     try {
-      const { data } = await this.axios.get<GetWorkoutResponse>('/api/logs', {
+      const { data } = await this.axios.get<GetLogsResponse>('/api/logs', {
         params: { userId: '6urOxvgJCsYFv0ZaIY2IG1lx7ZC2' },
       });
 
@@ -31,7 +31,7 @@ class LogsService extends AxiosService {
   }
 }
 
-interface GetWorkoutResponse {
+interface GetLogsResponse {
   userId: string;
   completedWorkouts: CompletedWorkout[];
 }
