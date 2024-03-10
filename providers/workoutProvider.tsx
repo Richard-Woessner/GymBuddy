@@ -1,3 +1,4 @@
+import { User } from 'firebase/auth';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { GetWorkoutsResponse, Workout, workoutService } from '../services/workoutService';
 
@@ -5,7 +6,7 @@ interface WorkoutsContextType {
   workouts: Workout[] | null;
   isLoading: boolean;
 
-  getWorkouts: () => Promise<Workout[]>;
+  getWorkouts: (user: User) => Promise<Workout[]>;
   deleteWorkout: (workout: Workout) => Promise<boolean>;
 }
 
@@ -13,7 +14,7 @@ const initialValues: WorkoutsContextType = {
   workouts: null,
   isLoading: false,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getWorkouts: function (): Promise<Workout[]> {
+  getWorkouts: function (user: User): Promise<Workout[]> {
     throw new Error('Function not implemented.');
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -32,7 +33,7 @@ export const WorkoutsProvider = (props: WorkoutsProviderProps) => {
   const [workouts, setWorkouts] = useState<Workout[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const getWorkouts = useCallback(async () => {
+  const getWorkouts = useCallback(async (user: User) => {
     console.log('Getting workouts');
 
     const tempWorkouts: Workout[] = [];
@@ -40,7 +41,7 @@ export const WorkoutsProvider = (props: WorkoutsProviderProps) => {
     try {
       setIsLoading(true);
 
-      const workoutres = await workoutService.getWorkouts();
+      const workoutres = await workoutService.getWorkouts(user.uid);
 
       console.log(workoutres);
 

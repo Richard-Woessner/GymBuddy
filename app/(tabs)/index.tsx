@@ -2,17 +2,23 @@ import { Animated, FlatList, SafeAreaView, StyleSheet } from 'react-native';
 
 import Loading from '@components/Loading';
 import { useIsFocused } from '@react-navigation/native';
+import { useLocalSearchParams } from 'expo-router';
+import { User } from 'firebase/auth';
 import { useEffect, useRef, useState } from 'react';
 import { Text, View } from '../../components/Themed';
 import { HomeWorkoutCard } from '../../components/home/HomeWorkoutCard';
 import StartWorkoutButton from '../../components/home/StartWorkoutButton';
 import StartWorkoutCard from '../../components/home/StartWorkoutCard';
 import { hashObject } from '../../helpers/func';
+import { useAuth } from '../../providers/authProvider';
 import { useWorkouts } from '../../providers/workoutProvider';
 
 export default function TabOneScreen() {
   const workoutsProvider = useWorkouts();
+  const authProvider = useAuth();
+  const { data } = useLocalSearchParams();
   const { workouts, isLoading } = workoutsProvider;
+  const { user, setUser } = authProvider;
 
   const isFocused = useIsFocused();
 
@@ -23,19 +29,35 @@ export default function TabOneScreen() {
   const translateYWorkout = useRef(new Animated.Value(300)).current;
 
   const [workoutIndex, setWorkoutIndex] = useState<number | null>(null);
+  const [tempUser, setTempUser] = useState<User | null>(null);
 
   const initData = async () => {
-    workoutsProvider.getWorkouts();
+    console.log(tempUser);
+    if (!tempUser) {
+      return;
+    }
+    workoutsProvider.getWorkouts(tempUser);
+
+    //authProvider.createUser('b@b.com', 'sdfsdfsdfsdfsdf');
   };
 
   useEffect(() => {
-    if (workoutsProvider.workouts === null) {
-      console.log('workoutsProvider.workouts is null, calling initData on Index');
-      initData();
-    }
-  }, [isFocused]);
+    console.log('home useEffect');
+    console.log(user);
+    if (data) {
+      const u = JSON.parse(data as string);
 
-  if (isLoading || !workouts) {
+      console.log(u);
+      setTempUser(u);
+    }
+    initData();
+  }, [isFocused, user, data]);
+
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
+
+  if (isLoading || !workouts || !tempUser) {
     return <Loading />;
   }
 

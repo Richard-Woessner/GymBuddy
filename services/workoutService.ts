@@ -5,10 +5,10 @@ class WorkoutService extends AxiosService {
     super();
   }
 
-  async getWorkouts() {
+  async getWorkouts(userId: string) {
     try {
       const { data } = await this.axios.get<GetWorkoutsResponse>('/api/workouts', {
-        params: { userId: '6urOxvgJCsYFv0ZaIY2IG1lx7ZC2' },
+        params: { userId: userId },
       });
       return data;
     } catch (e) {

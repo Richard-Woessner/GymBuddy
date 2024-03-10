@@ -4,6 +4,8 @@ import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
 import { useEffect } from 'react';
 import { useColorScheme } from 'react-native';
+import { AuthProvider } from '../providers/authProvider';
+import { FireStoreProvider } from '../providers/fireStoreProvider';
 import { LogsProvider } from '../providers/logsProvider';
 import { WorkoutsProvider } from '../providers/workoutProvider';
 
@@ -49,19 +51,27 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-    <LogsProvider>
-      <WorkoutsProvider>
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-            <Stack.Screen
-              name="workout"
-              options={{ presentation: 'modal', headerShown: true, headerTitle: 'Workout' }}
-            />
-          </Stack>
-        </ThemeProvider>
-      </WorkoutsProvider>
-    </LogsProvider>
+    <AuthProvider>
+      <FireStoreProvider>
+        <LogsProvider>
+          <WorkoutsProvider>
+            <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+                <Stack.Screen
+                  name="workout"
+                  options={{ presentation: 'modal', headerShown: true, headerTitle: 'Workout' }}
+                />
+                <Stack.Screen
+                  name="signup"
+                  options={{ presentation: 'modal', headerShown: false, headerTitle: 'signup' }}
+                />
+              </Stack>
+            </ThemeProvider>
+          </WorkoutsProvider>
+        </LogsProvider>
+      </FireStoreProvider>
+    </AuthProvider>
   );
 }
