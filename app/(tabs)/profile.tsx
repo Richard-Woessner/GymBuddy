@@ -1,11 +1,30 @@
 import { Image, Pressable, StyleSheet, TextInput } from 'react-native';
 
+import Button from '@components/Button';
+import { Text, View } from '@components/Themed';
 import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
-import { Text, View } from '../../components/Themed';
+import { router } from 'expo-router';
+import { useMemo, useState } from 'react';
+import { useAuth } from '../../providers/authProvider';
 
 export default function Profile() {
+  const authProvider = useAuth();
+  const { user } = authProvider;
   const [edit, setEdit] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  const openSignup = () => {
+    console.log('openSignup');
+
+    setOpen(true);
+    router.push({ pathname: `/signup`, params: { id: 2 } });
+  };
+
+  useMemo(() => {
+    if (user) {
+      console.log(user);
+    }
+  }, [user]);
 
   return (
     <View style={styles.container}>
@@ -22,7 +41,7 @@ export default function Profile() {
 
       <Image style={{ width: 100, height: 100, borderRadius: 50 }} source={{ uri: dummypicUrl }} />
 
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+      {/* <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <View style={styles.userInfo}>
         {Object.entries(dummydata.info).map((info, i) => {
           const [key, value] = info;
@@ -33,7 +52,19 @@ export default function Profile() {
             </View>
           );
         })}
+      </View> */}
+
+      {/* Help me create a login or signup buttons */}
+      <View style={styles.buttons}>
+        <Button buttonText="Login" onPress={() => {}} />
+        <Button
+          buttonText="Signup"
+          onPress={() => {
+            openSignup();
+          }}
+        />
       </View>
+      <Ionicons name="logo-google" size={38} color="white" />
     </View>
   );
 }
@@ -60,6 +91,13 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     paddingVertical: 50,
   },
+  buttons: {
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+    paddingHorizontal: 50,
+    width: '100%',
+  },
+  button: {},
   title: {
     fontSize: 20,
     fontWeight: 'bold',

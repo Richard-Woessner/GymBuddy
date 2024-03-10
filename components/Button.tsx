@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet } from 'react-native';
-import { View, Text, isLightMode } from './Themed';
+import { Text } from './Themed';
 
 export interface ButtonProps {
   buttonText: string;
@@ -24,6 +24,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 7,
     margin: 5,
+    height: 30,
   },
   text: {
     fontSize: 16,

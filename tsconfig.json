@@ -3,7 +3,7 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
-      "@models/*": ["./models/*"],
+      "@models/*": ["./models/*.ts"],
       "@components/*": ["./components/*.tsx"],
       "@homeComponents/*": ["./components/home/*.tsx"],
       "@helpers/*": ["./helpers/*.ts"]
