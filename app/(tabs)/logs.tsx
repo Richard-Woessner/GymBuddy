@@ -1,28 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import {
-  StyleSheet,
-  ScrollView,
-  ActivityIndicator,
-  RefreshControl,
-  FlatList,
-  SafeAreaView,
-} from 'react-native';
-import { View, Text, isLightMode } from '../../components/Themed';
-import { useLogs } from '../../providers/logsProvider';
-import { useIsFocused } from '@react-navigation/native';
 import Loading from '@components/Loading';
-import { CompletedWorkout } from '@models/CompletedWorkout';
-import { hashObject } from '../../helpers/func';
+import { Log } from '@models/Logs';
+import { useIsFocused } from '@react-navigation/native';
 import dayjs from 'dayjs';
+import React, { useEffect, useState } from 'react';
+import { FlatList, RefreshControl, SafeAreaView, StyleSheet } from 'react-native';
+import { Text, View, isLightMode } from '../../components/Themed';
+import { hashObject } from '../../helpers/func';
+import { useAuth } from '../../providers/authProvider';
+import { useFireStore } from '../../providers/fireStoreProvider';
 
 const Logs = () => {
-  const { logs, getLogs, isLoading } = useLogs();
+  const { logs, getLogs, isLoading } = useFireStore();
+  const authProvider = useAuth();
+  const { user, getAuth } = authProvider;
   const isFocused = useIsFocused();
 
   const [refreshing, setRefreshing] = useState(false);
 
   const initData = async () => {
-    await getLogs();
+    console.log(user);
+
+    if (!user) {
+      return;
+    }
+
+    await getLogs(user!);
+
+    console.log('logs', logs);
   };
 
   const backgroundColor = {
@@ -40,9 +44,13 @@ const Logs = () => {
 
   useEffect(() => {
     initData();
-  }, []);
+  }, [isFocused]);
 
-  const LogView = (props: { log: CompletedWorkout }) => {
+  useEffect(() => {
+    console.log('logs', logs);
+  }, [logs]);
+
+  const LogView = (props: { log: Log }) => {
     const { log } = props;
     const key = hashObject(log);
 
@@ -58,7 +66,7 @@ const Logs = () => {
                 <Text>{`Total Weight: ${exercise.totalWeight || '-'}`}</Text>
               </View>
             ))}
-          <Text style={styles.date}>{dayjs(log.date).format('MMM-DD hh:mm a')}</Text>
+          <Text style={styles.date}>{dayjs(log.date.nanoseconds).format('MMM-DD hh:mm a')}</Text>
         </View>
       </SafeAreaView>
     );
@@ -68,14 +76,18 @@ const Logs = () => {
     return;
   }
 
-  if (isLoading) {
+  if (isLoading || !user) {
     return <Loading />;
+  }
+
+  if (logs.length === 0) {
+    return <Text>No logs found</Text>;
   }
 
   return (
     <FlatList
       style={styles.container}
-      data={logs.sort((a, b) => (a.date > b.date ? -1 : 1))}
+      data={logs.sort((a, b) => (a.date.nanoseconds > b.date.nanoseconds ? -1 : 1))}
       renderItem={({ item }) => <LogView log={item} />}
       keyExtractor={(item) => hashObject(item).toString()}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}

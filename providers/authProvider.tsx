@@ -1,5 +1,6 @@
+import { getData, storeData } from '@helpers/asyncStorage';
 import { User, createUserWithEmailAndPassword } from 'firebase/auth';
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { auth } from '../firebaseConfig';
 
 interface AuthContextType {
@@ -7,7 +8,7 @@ interface AuthContextType {
   user: User | null;
 
   setUser: (user: User | null) => void;
-  getAuth: () => Promise<any>;
+  getAuth: () => Promise<User | null>;
   createUser: (email: string, password: string) => Promise<User | null>;
 }
 
@@ -16,7 +17,7 @@ const initialValues: AuthContextType = {
   user: null,
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getAuth: function (): Promise<any> {
+  getAuth: function (): Promise<User | null> {
     throw new Error('Function not implemented.');
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -40,22 +41,42 @@ export const AuthProvider = (props: AuthProviderProps) => {
   const [user, realSetUser] = useState<User | null>(null);
 
   const setUser = (user: User | null) => {
-    console.log(user);
-    console.log('Setting user');
+    console.log('\x1b[32m', `setUser: ${user}`);
+
+    storeData('user', user || {});
+
     realSetUser(user);
   };
 
-  const getAuth = useCallback(async (): Promise<any> => {
+  const getAuth = useCallback(async (): Promise<User | null> => {
+    setIsLoading(true);
+    console.log('getAuth');
+
+    if (user) {
+      return user;
+    }
+
     try {
+      const u = await getData<User>('user');
+      console.log('User found in storage: ', u);
+
+      if (u) {
+        setUser(u);
+        return u;
+      } else {
+        console.log('No user found in storage');
+        return null;
+      }
     } catch (e) {
       console.error(e);
-      return [];
+      return null;
     } finally {
       setIsLoading(false);
     }
   }, []);
 
   const createUser = useCallback(async (email: string, password: string): Promise<User | null> => {
+    setIsLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 
@@ -78,6 +99,10 @@ export const AuthProvider = (props: AuthProviderProps) => {
     }
   }, []);
 
+  useEffect(() => {
+    getAuth();
+  }, []);
+
   const values = useMemo(
     () => ({
       isLoading,
@@ -87,7 +112,7 @@ export const AuthProvider = (props: AuthProviderProps) => {
       createUser,
       setUser,
     }),
-    [isLoading]
+    [isLoading, user, getAuth, createUser, setUser]
   );
 
   return <AuthContext.Provider value={values}>{props.children}</AuthContext.Provider>;

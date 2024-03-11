@@ -6,8 +6,8 @@ import { useEffect, useState } from 'react';
 import { Alert, StyleSheet } from 'react-native';
 import ExerciseCard from '../components/ExerciseCard';
 import { Text, View } from '../components/Themed';
-import { useLogs } from '../providers/logsProvider';
-import { useWorkouts } from '../providers/workoutProvider';
+import { useAuth } from '../providers/authProvider';
+import { useFireStore } from '../providers/fireStoreProvider';
 import { Workout } from '../services/workoutService';
 
 /**
@@ -16,9 +16,10 @@ import { Workout } from '../services/workoutService';
  * This is the card that allows the user to check off exercises and post the log.
  */
 const WorkoutPage = () => {
-  const workoutsProvider = useWorkouts();
-  const logsProvider = useLogs();
-  const { workouts } = workoutsProvider;
+  const firestoreProvider = useFireStore();
+  const { user } = useAuth();
+
+  const { workouts } = firestoreProvider;
   const { id } = useLocalSearchParams();
 
   const [tempWorkout, setTempWorkout] = useState<Workout | null>(null);
@@ -35,7 +36,6 @@ const WorkoutPage = () => {
 
   const postLog = async () => {
     if (!tempWorkout || !tempWorkout?.Exercises) {
-      alert('No workout selected');
       return;
     }
 
@@ -67,7 +67,7 @@ const WorkoutPage = () => {
       tempSession.exercises.push(tempExercise);
     });
 
-    logsProvider.postLog(tempSession).then(() => {
+    firestoreProvider.postLog(tempSession, user!).then(() => {
       alert('Log posted!');
       router?.push({ pathname: '/' });
     });

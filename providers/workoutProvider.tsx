@@ -1,26 +1,14 @@
-import { User } from 'firebase/auth';
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
-import { GetWorkoutsResponse, Workout, workoutService } from '../services/workoutService';
+import { createContext, useContext, useMemo, useState } from 'react';
+import { Workout } from '../services/workoutService';
 
 interface WorkoutsContextType {
   workouts: Workout[] | null;
   isLoading: boolean;
-
-  getWorkouts: (user: User) => Promise<Workout[]>;
-  deleteWorkout: (workout: Workout) => Promise<boolean>;
 }
 
 const initialValues: WorkoutsContextType = {
   workouts: null,
   isLoading: false,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getWorkouts: function (user: User): Promise<Workout[]> {
-    throw new Error('Function not implemented.');
-  },
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  deleteWorkout: function (): Promise<boolean> {
-    throw new Error('Function not implemented.');
-  },
 };
 
 export const WorkoutsContext = createContext<WorkoutsContextType>(initialValues);
@@ -33,70 +21,73 @@ export const WorkoutsProvider = (props: WorkoutsProviderProps) => {
   const [workouts, setWorkouts] = useState<Workout[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const getWorkouts = useCallback(async (user: User) => {
-    console.log('Getting workouts');
+  // const getWorkouts = useCallback(async (user: User) => {
+  //   console.log('Getting workouts');
 
-    const tempWorkouts: Workout[] = [];
+  //   const tempWorkouts: Workout[] = [];
 
-    try {
-      setIsLoading(true);
+  //   console.log('Getting workouts 1');
 
-      const workoutres = await workoutService.getWorkouts(user.uid);
+  //   try {
+  //     setIsLoading(false);
 
-      console.log(workoutres);
+  //     console.log('Getting workouts 2');
 
-      let x = workoutres!.Workouts;
+  //     const workoutres = await workoutService.getWorkouts(user.uid);
 
-      x = x.map((w) => {
-        w.Display = true;
-        return w;
-      });
+  //     console.log(workoutres);
 
-      console.log(x);
+  //     console.log(workoutres);
 
-      setWorkouts(x);
-      //setWorkouts(x);
-      tempWorkouts.push(...x);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsLoading(false);
-      return tempWorkouts;
-    }
-  }, []);
+  //     let x = workoutres!.Workouts;
 
-  const deleteWorkout = useCallback(async (workout: Workout) => {
-    try {
-      setIsLoading(true);
+  //     x = x.map((w) => {
+  //       w.Display = true;
+  //       return w;
+  //     });
 
-      const workoutres = (await workoutService.deleteWorkout(workout.Id)) as GetWorkoutsResponse;
+  //     console.log(x);
 
-      if (!workoutres) {
-        return false;
-      }
+  //     setWorkouts(x);
+  //     //setWorkouts(x);
+  //     tempWorkouts.push(...x);
+  //   } catch (e) {
+  //     console.error(e);
+  //   } finally {
+  //     setIsLoading(false);
+  //     return tempWorkouts;
+  //   }
+  // }, []);
 
-      console.log(workoutres);
+  // const deleteWorkout = useCallback(async (workout: Workout) => {
+  //   try {
+  //     setIsLoading(true);
 
-      setWorkouts(workoutres.Workouts);
+  //     const workoutres = (await workoutService.deleteWorkout(workout.Id)) as GetWorkoutsResponse;
 
-      return true;
-    } catch (e) {
-      console.error(e);
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  //     if (!workoutres) {
+  //       return false;
+  //     }
+
+  //     console.log(workoutres);
+
+  //     setWorkouts(workoutres.Workouts);
+
+  //     return true;
+  //   } catch (e) {
+  //     console.error(e);
+  //     return false;
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // }, []);
 
   const values = useMemo(
     () => ({
       workouts,
       isLoading,
-
-      getWorkouts,
-      deleteWorkout,
     }),
-    [workouts, isLoading, getWorkouts, deleteWorkout]
+    [workouts, isLoading]
   );
 
   return <WorkoutsContext.Provider value={values}>{props.children}</WorkoutsContext.Provider>;
