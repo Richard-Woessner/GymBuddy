@@ -3,6 +3,7 @@ import { Image, Pressable, StyleSheet, TextInput } from 'react-native';
 import Button from '@components/Button';
 import { Text, View } from '@components/Themed';
 import { Ionicons } from '@expo/vector-icons';
+import { useIsFocused } from '@react-navigation/native';
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { useAuth } from '../../providers/authProvider';
@@ -13,6 +14,8 @@ export default function Profile() {
   const [edit, setEdit] = useState(false);
   const [open, setOpen] = useState(false);
 
+  const isFocused = useIsFocused();
+
   const openSignup = () => {
     console.log('openSignup');
 
@@ -20,11 +23,18 @@ export default function Profile() {
     router.push({ pathname: `/signup`, params: { id: 2 } });
   };
 
+  const openLogin = () => {
+    console.log('openLogin');
+
+    setOpen(true);
+    router.push({ pathname: `/login`, params: { id: 2 } });
+  };
+
   useMemo(() => {
     if (user) {
       console.log(user);
     }
-  }, [user]);
+  }, [user, isFocused]);
 
   return (
     <View style={styles.container}>
@@ -41,23 +51,15 @@ export default function Profile() {
 
       <Image style={{ width: 100, height: 100, borderRadius: 50 }} source={{ uri: dummypicUrl }} />
 
-      {/* <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <View style={styles.userInfo}>
-        {Object.entries(dummydata.info).map((info, i) => {
-          const [key, value] = info;
-          return (
-            <View style={styles.userInfoRow} key={i}>
-              <Key text={key} />
-              <Stat text={value.toString()} edit={edit} />
-            </View>
-          );
-        })}
-      </View> */}
-
       <View style={styles.buttons}>
         {!user ? (
           <>
-            <Button buttonText="Login" onPress={() => {}} />
+            <Button
+              buttonText="Login"
+              onPress={() => {
+                openLogin();
+              }}
+            />
             <Button
               buttonText="Signup"
               onPress={() => {
@@ -66,7 +68,7 @@ export default function Profile() {
             />
           </>
         ) : (
-          <Button buttonText="Logout" onPress={() => authProvider.setUser(null)} />
+          <Button buttonText="Logout" onPress={() => authProvider.logOff()} />
         )}
       </View>
       <Ionicons name="logo-google" size={38} color="white" />
