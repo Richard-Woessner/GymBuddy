@@ -11,7 +11,7 @@ export const storeData = async (key: string, value: string | object) => {
 
     await AsyncStorage.setItem(key, value);
   } catch (e) {
-    // saving error
+    console.error(e);
   }
 };
 
@@ -23,9 +23,16 @@ export const getData = async <Type = string>(key: string): Promise<Type | null> 
       return JSON.parse(value) as Type;
     }
   } catch (e) {
-    // error reading value
     console.error(e);
   }
 
   return null;
+};
+
+export const removeData = async (key: string) => {
+  try {
+    await AsyncStorage.removeItem(key);
+  } catch (e) {
+    console.error(e);
+  }
 };

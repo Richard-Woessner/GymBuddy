@@ -4,7 +4,6 @@ import Loading from '@components/Loading';
 import StartWorkoutCard from '@components/home/StartWorkoutCard';
 import { useIsFocused } from '@react-navigation/native';
 import { useLocalSearchParams } from 'expo-router';
-import { User } from 'firebase/auth';
 import { useEffect, useRef, useState } from 'react';
 import { Text, View } from '../../components/Themed';
 import { HomeWorkoutCard } from '../../components/home/HomeWorkoutCard';
@@ -30,40 +29,37 @@ export default function TabOneScreen() {
   const translateYWorkout = useRef(new Animated.Value(300)).current;
 
   const [workoutIndex, setWorkoutIndex] = useState<number | null>(null);
-  const [tempUser, setTempUser] = useState<User | null>(null);
 
   const initData = async () => {
-    let u = null;
-
     if (!user) {
       console.log('no user');
-      u = await getAuth();
-    } else {
-      u = user;
-    }
-    setTempUser(u);
+      const u = await getAuth();
 
-    if (!u) {
-      return;
+      if (!u) {
+        return;
+      }
     }
 
     if (!workouts) {
-      await fireStoreProverder.getWorkouts(u);
+      await fireStoreProverder.getWorkouts(user!);
     }
   };
 
   useEffect(() => {
+    if (!isFocused || workouts) {
+      return;
+    }
+
     console.log('home useEffect');
 
     if (data) {
       const u = JSON.parse(data as string);
-      setTempUser(u);
     }
 
     initData();
   }, [isFocused, user, data]);
 
-  if (isLoading || !workouts || !tempUser) {
+  if (isLoading || !workouts || !user) {
     return <Loading />;
   }
 
@@ -87,7 +83,7 @@ export default function TabOneScreen() {
 
             return (
               <HomeWorkoutCard
-                user={tempUser}
+                user={user}
                 key={i}
                 workout={wo}
                 buttonText={wo.Name}

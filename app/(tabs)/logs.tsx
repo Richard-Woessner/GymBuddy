@@ -18,15 +18,11 @@ const Logs = () => {
   const [refreshing, setRefreshing] = useState(false);
 
   const initData = async () => {
-    console.log(user);
-
     if (!user) {
       return;
     }
 
     await getLogs(user!);
-
-    console.log('logs', logs);
   };
 
   const backgroundColor = {
