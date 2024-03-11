@@ -29,7 +29,7 @@ export default function Profile() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>{dummydata.name}</Text>
+        <Text style={styles.title}>{user?.email ?? ''}</Text>
         <Pressable
           onPress={() => {
             setEdit(!edit);
@@ -54,15 +54,20 @@ export default function Profile() {
         })}
       </View> */}
 
-      {/* Help me create a login or signup buttons */}
       <View style={styles.buttons}>
-        <Button buttonText="Login" onPress={() => {}} />
-        <Button
-          buttonText="Signup"
-          onPress={() => {
-            openSignup();
-          }}
-        />
+        {!user ? (
+          <>
+            <Button buttonText="Login" onPress={() => {}} />
+            <Button
+              buttonText="Signup"
+              onPress={() => {
+                openSignup();
+              }}
+            />
+          </>
+        ) : (
+          <Button buttonText="Logout" onPress={() => authProvider.setUser(null)} />
+        )}
       </View>
       <Ionicons name="logo-google" size={38} color="white" />
     </View>
