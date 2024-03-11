@@ -1,16 +1,25 @@
+import { Log } from '@models/Logs';
 import { User } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { db } from '../firebaseConfig';
+import { Workout } from '../services/workoutService';
 interface FireStoreContextType {
   isLoading: boolean;
+  workouts: Workout[] | null;
+  logs: Log[] | null;
 
   createWorkout: (user: User) => Promise<any>;
-  getWorkouts: (user: User) => Promise<any>;
+  getWorkouts: (user: User) => Promise<Workout[] | null>;
+  deleteWorkout: (workout: Workout, user: User) => Promise<boolean>;
+  getLogs: (user: User) => Promise<Log[] | null>;
+  postLog: (log: any, user: User) => Promise<boolean>;
 }
 
 const initialValues: FireStoreContextType = {
   isLoading: false,
+  workouts: null,
+  logs: null,
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   createWorkout: function (user: User): Promise<any> {
@@ -18,6 +27,17 @@ const initialValues: FireStoreContextType = {
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getWorkouts: function (user: User): Promise<any> {
+    throw new Error('Function not implemented.');
+  },
+  deleteWorkout: function (workout: Workout, user: User): Promise<boolean> {
+    throw new Error('Function not implemented.');
+  },
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  getLogs: function (user: User): Promise<any> {
+    throw new Error('Function not implemented.');
+  },
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  postLog: function (log: any, user: User): Promise<boolean> {
     throw new Error('Function not implemented.');
   },
 };
@@ -31,21 +51,18 @@ export interface FireStoreProviderProps {
 export const FireStoreProvider = (props: FireStoreProviderProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const getFireStore = useCallback(async (): Promise<any> => {
-    try {
-    } catch (e) {
-      console.error(e);
-      return [];
-    } finally {
-      setIsLoading(false);
-    }
+  const [workouts, setWorkouts] = useState<Workout[] | null>(null);
+  const [logs, setLogs] = useState<Log[] | null>(null);
+
+  const resetStates = useCallback(() => {
+    setIsLoading(false);
+    setWorkouts(null);
+    setLogs(null);
   }, []);
 
   const createWorkout = useCallback(async (user: User): Promise<any> => {
     setIsLoading(true);
     try {
-      // const col = collection(db, 'Users');
-
       await setDoc(doc(db, 'Workouts', user.uid), {
         uid: user.uid,
         User: 'User',
@@ -58,21 +75,115 @@ export const FireStoreProvider = (props: FireStoreProviderProps) => {
 
       return docRef;
     } catch (e: any) {
+      console.error(e);
       return null;
     } finally {
       setIsLoading(false);
     }
   }, []);
 
-  const getWorkouts = useCallback(async (user: User): Promise<any> => {
+  const getWorkouts = useCallback(async (user: User): Promise<Workout[] | null> => {
     setIsLoading(true);
+    console.log('Getting workouts');
+
     try {
       const docRef = doc(db, 'Workouts', user.uid);
       const docSnap = await getDoc(docRef);
-      const workoutData = docSnap.data();
-      return workoutData;
+      let w = docSnap.data();
+
+      let x = w!.Workouts as Workout[];
+
+      console.log(`Recieved ${x.length} workouts from firestore`);
+
+      x = x.map((w) => {
+        w.Display = true;
+        return w;
+      }) as Workout[];
+
+      setWorkouts(x);
+
+      return x;
     } catch (e: any) {
+      console.error(e);
       return null;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const deleteWorkout = useCallback(async (workout: Workout, user: User): Promise<boolean> => {
+    setIsLoading(true);
+    console.log('Deleting workout from firestore');
+
+    try {
+      const docRef = doc(db, 'Workouts', user.uid);
+      const docSnap = await getDoc(docRef);
+      const workouts = docSnap.data()?.Workouts;
+      if (!workouts) {
+        return false;
+      }
+      const updatedWorkouts = workouts.filter((w: Workout) => w.Id !== workout.Id);
+
+      const responce = await setDoc(doc(db, 'Workouts', user.uid), {
+        ...docSnap.data(),
+        Workouts: updatedWorkouts,
+      });
+
+      setWorkouts(updatedWorkouts);
+
+      return true;
+    } catch (e: any) {
+      console.log(e);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const getLogs = useCallback(async (user: User): Promise<Log[] | null> => {
+    console.log('Getting logs from firestore');
+    setIsLoading(true);
+    try {
+      const docRef = doc(db, 'Logs', user.uid);
+      console.log(docRef);
+
+      const docSnap = await getDoc(docRef);
+      let x = docSnap.data() as { Logs: Log[] } | null;
+
+      console.log(JSON.stringify(x));
+
+      if (!x) {
+        return null;
+      }
+
+      setLogs(x.Logs);
+
+      return x.Logs;
+    } catch (e: any) {
+      console.error(e);
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const postLog = useCallback(async (log: any, user: User): Promise<boolean> => {
+    setIsLoading(true);
+    console.log('Posting log to firestore');
+    try {
+      const docRef = doc(db, 'Logs', user.uid);
+      const docSnap = await getDoc(docRef);
+      const logs = docSnap.data()?.Logs;
+      const updatedLogs = logs ? [...logs, log] : [log];
+      const response = await setDoc(doc(db, 'Logs', user.uid), {
+        ...docSnap.data(),
+        Logs: updatedLogs,
+      });
+      setLogs(updatedLogs);
+      return true;
+    } catch (e: any) {
+      console.log(e);
+      return false;
     } finally {
       setIsLoading(false);
     }
@@ -81,11 +192,16 @@ export const FireStoreProvider = (props: FireStoreProviderProps) => {
   const values = useMemo(
     () => ({
       isLoading,
+      workouts,
+      logs,
 
       createWorkout,
       getWorkouts,
+      deleteWorkout,
+      getLogs,
+      postLog,
     }),
-    [isLoading]
+    [isLoading, workouts, logs]
   );
 
   return <FireStoreContext.Provider value={values}>{props.children}</FireStoreContext.Provider>;

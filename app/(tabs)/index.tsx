@@ -1,6 +1,7 @@
 import { Animated, FlatList, SafeAreaView, StyleSheet } from 'react-native';
 
 import Loading from '@components/Loading';
+import StartWorkoutCard from '@components/home/StartWorkoutCard';
 import { useIsFocused } from '@react-navigation/native';
 import { useLocalSearchParams } from 'expo-router';
 import { User } from 'firebase/auth';
@@ -8,17 +9,17 @@ import { useEffect, useRef, useState } from 'react';
 import { Text, View } from '../../components/Themed';
 import { HomeWorkoutCard } from '../../components/home/HomeWorkoutCard';
 import StartWorkoutButton from '../../components/home/StartWorkoutButton';
-import StartWorkoutCard from '../../components/home/StartWorkoutCard';
 import { hashObject } from '../../helpers/func';
 import { useAuth } from '../../providers/authProvider';
-import { useWorkouts } from '../../providers/workoutProvider';
+import { useFireStore } from '../../providers/fireStoreProvider';
 
 export default function TabOneScreen() {
-  const workoutsProvider = useWorkouts();
+  const fireStoreProverder = useFireStore();
+  const { isLoading, workouts } = fireStoreProverder;
+
   const authProvider = useAuth();
   const { data } = useLocalSearchParams();
-  const { workouts, isLoading } = workoutsProvider;
-  const { user, setUser } = authProvider;
+  const { user, setUser, getAuth } = authProvider;
 
   const isFocused = useIsFocused();
 
@@ -32,30 +33,35 @@ export default function TabOneScreen() {
   const [tempUser, setTempUser] = useState<User | null>(null);
 
   const initData = async () => {
-    console.log(tempUser);
-    if (!tempUser) {
+    let u = null;
+
+    if (!user) {
+      console.log('no user');
+      u = await getAuth();
+    } else {
+      u = user;
+    }
+    setTempUser(u);
+
+    if (!u) {
       return;
     }
-    workoutsProvider.getWorkouts(tempUser);
 
-    //authProvider.createUser('b@b.com', 'sdfsdfsdfsdfsdf');
+    if (!workouts) {
+      await fireStoreProverder.getWorkouts(u);
+    }
   };
 
   useEffect(() => {
     console.log('home useEffect');
-    console.log(user);
+
     if (data) {
       const u = JSON.parse(data as string);
-
-      console.log(u);
       setTempUser(u);
     }
+
     initData();
   }, [isFocused, user, data]);
-
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
 
   if (isLoading || !workouts || !tempUser) {
     return <Loading />;
@@ -65,6 +71,8 @@ export default function TabOneScreen() {
     <SafeAreaView>
       <View style={styles.container}>
         <Text style={styles.title}>Home</Text>
+
+        {workouts.length === 0 && <Text>No workouts found</Text>}
 
         <FlatList
           style={{ width: '100%', height: '100%' }}
@@ -79,6 +87,7 @@ export default function TabOneScreen() {
 
             return (
               <HomeWorkoutCard
+                user={tempUser}
                 key={i}
                 workout={wo}
                 buttonText={wo.Name}
@@ -100,12 +109,14 @@ export default function TabOneScreen() {
           translateYStart={translateYStart}
         />
 
-        <StartWorkoutCard
-          open={workoutCardOpen}
-          setOpen={setWorkoutCardOpen}
-          translateYStart={translateYWorkout}
-          workoutIndex={workoutIndex}
-        />
+        {workouts.length > 0 && (
+          <StartWorkoutCard
+            open={workoutCardOpen}
+            setOpen={setWorkoutCardOpen}
+            translateYStart={translateYWorkout}
+            workoutIndex={workoutIndex}
+          />
+        )}
       </View>
     </SafeAreaView>
   );

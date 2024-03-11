@@ -1,9 +1,11 @@
+import { User } from 'firebase/auth';
 import { Alert, Animated, Pressable, StyleSheet } from 'react-native';
-import { useWorkouts } from '../../providers/workoutProvider';
+import { useFireStore } from '../../providers/fireStoreProvider';
 import { Workout } from '../../services/workoutService';
 import { Text, isLightMode } from '../Themed';
 
 interface HomeWorkoutCard {
+  user: User;
   buttonText: string;
   onPress: () => void;
   translateYStart: Animated.Value;
@@ -11,8 +13,8 @@ interface HomeWorkoutCard {
 }
 
 export const HomeWorkoutCard = (props: HomeWorkoutCard) => {
-  const { buttonText, onPress, translateYStart, workout } = props;
-  const { deleteWorkout } = useWorkouts();
+  const { buttonText, onPress, translateYStart, workout, user } = props;
+  const { deleteWorkout } = useFireStore();
 
   const lightMode = isLightMode();
 
@@ -24,7 +26,7 @@ export const HomeWorkoutCard = (props: HomeWorkoutCard) => {
     }).start();
   };
 
-  const deleteWorkoutAlert = () => {
+  const deleteWorkoutAlert = (workout: Workout) => {
     console.log('Delete workout');
 
     Alert.alert('Delete Workout', 'Are you sure you want to delete this workout?', [
@@ -33,12 +35,12 @@ export const HomeWorkoutCard = (props: HomeWorkoutCard) => {
         onPress: () => console.log('Cancel Pressed'),
         style: 'cancel',
       },
-      { text: 'OK', onPress: () => removeDeletedWorkout() },
+      { text: 'OK', onPress: () => removeDeletedWorkout(workout) },
     ]);
   };
 
-  const removeDeletedWorkout = async () => {
-    if (await deleteWorkout(workout)) {
+  const removeDeletedWorkout = async (workout: Workout) => {
+    if (await deleteWorkout(workout, user)) {
       console.log('Workout deleted');
     }
   };
@@ -47,7 +49,7 @@ export const HomeWorkoutCard = (props: HomeWorkoutCard) => {
     <Pressable
       style={lightMode ? styles.lightworkoutbuttonStyle : styles.darkworkoutbuttonStyle}
       onPress={openStartPopup}
-      onLongPress={deleteWorkoutAlert}
+      onLongPress={() => deleteWorkoutAlert(workout)}
     >
       {({ pressed }) => <Text style={{ height: 18 }}>{buttonText}</Text>}
     </Pressable>

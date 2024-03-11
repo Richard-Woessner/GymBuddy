@@ -6,7 +6,9 @@
       "@models/*": ["./models/*.ts"],
       "@components/*": ["./components/*.tsx"],
       "@homeComponents/*": ["./components/home/*.tsx"],
-      "@helpers/*": ["./helpers/*.ts"]
+      "@helpers/*": ["./helpers/*.ts"],
+
+      "@firebase/auth": ["./node_modules/@firebase/auth/dist/index.rn.d.ts"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]

@@ -2,7 +2,7 @@ import Button from '@components/Button';
 import { deepCopy } from '@helpers/func';
 import { router } from 'expo-router';
 import { Animated, StyleSheet } from 'react-native';
-import { useWorkouts } from '../../providers/workoutProvider';
+import { useFireStore } from '../../providers/fireStoreProvider';
 import { Workout } from '../../services/workoutService';
 import DrawerCard from '../DrawerCards';
 import { Text, View, isLightMode } from '../Themed';
@@ -15,17 +15,17 @@ interface StartWorkoutCardProps {
 }
 
 const StartWorkoutCard = (props: StartWorkoutCardProps) => {
-  const workoutsProvider = useWorkouts();
-  const { workouts } = workoutsProvider;
+  const fireStoreProvider = useFireStore();
+  const { workouts } = fireStoreProvider;
   const { open, setOpen, translateYStart, workoutIndex } = props;
 
   const lightMode = isLightMode();
 
   const workout: Workout = deepCopy(workouts![workoutIndex! ?? 0]);
 
-  const redirectToWorkout = (workoutId: string) => {
+  const redirectToWorkout = (w: Workout) => {
     setOpen(false);
-    router.push({ pathname: `/workout`, params: { id: workoutId } });
+    router.push({ pathname: `/workout`, params: { id: w.Id } });
   };
 
   if (!workout || !open) {
@@ -42,7 +42,7 @@ const StartWorkoutCard = (props: StartWorkoutCardProps) => {
     >
       <>
         <Text>{workout.Name}</Text>
-        <Button buttonText="Start" onPress={() => redirectToWorkout(workout.Id)} />
+        <Button buttonText="Start" onPress={() => redirectToWorkout(workout)} />
 
         {workout.Exercises.map((exercise, i) => (
           <View style={styles.workoutRow} key={i}>
