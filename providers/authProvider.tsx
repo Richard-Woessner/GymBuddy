@@ -62,6 +62,7 @@ export const AuthProvider = (props: AuthProviderProps) => {
   };
 
   const getAuth = useCallback(async (): Promise<User | null> => {
+    console.log('authProvider: getAuth');
     setIsLoading(true);
     console.log('getAuth');
 
@@ -89,6 +90,7 @@ export const AuthProvider = (props: AuthProviderProps) => {
   }, []);
 
   const createUser = useCallback(async (email: string, password: string): Promise<User | null> => {
+    console.log('authProvider: createUser');
     setIsLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -113,13 +115,13 @@ export const AuthProvider = (props: AuthProviderProps) => {
   }, []);
 
   const login = useCallback(async (email: string, password: string): Promise<User | null> => {
+    console.log('authProvider: login');
     setIsLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       // Logged in
       const u = userCredential.user;
       setUser(u);
-      console.log(u);
       return u;
     } catch (e: any) {
       const errorCode = e.code;
