@@ -61,8 +61,14 @@ export const FireStoreProvider = (props: FireStoreProviderProps) => {
   }, []);
 
   const createWorkout = useCallback(async (user: User): Promise<any> => {
+    console.log('fireStoreProvider: createWorkout');
     setIsLoading(true);
     try {
+      if (!user) {
+        console.log('Create workout: No user');
+        return null;
+      }
+
       await setDoc(doc(db, 'Workouts', user.uid), {
         uid: user.uid,
         User: 'User',
@@ -83,10 +89,14 @@ export const FireStoreProvider = (props: FireStoreProviderProps) => {
   }, []);
 
   const getWorkouts = useCallback(async (user: User): Promise<Workout[] | null> => {
+    console.log('fireStoreProvider: getWorkouts');
     setIsLoading(true);
-    console.log('Getting workouts');
 
     try {
+      if (!user) {
+        console.log('getWorkouts: No user');
+      }
+
       const docRef = doc(db, 'Workouts', user.uid);
       const docSnap = await getDoc(docRef);
       let w = docSnap.data();
@@ -112,8 +122,8 @@ export const FireStoreProvider = (props: FireStoreProviderProps) => {
   }, []);
 
   const deleteWorkout = useCallback(async (workout: Workout, user: User): Promise<boolean> => {
+    console.log('fireStoreProvider: deleteWorkout');
     setIsLoading(true);
-    console.log('Deleting workout from firestore');
 
     try {
       const docRef = doc(db, 'Workouts', user.uid);
@@ -141,7 +151,7 @@ export const FireStoreProvider = (props: FireStoreProviderProps) => {
   }, []);
 
   const getLogs = useCallback(async (user: User): Promise<Log[] | null> => {
-    console.log('Getting logs from firestore');
+    console.log('fireStoreProvider: getLogs');
     setIsLoading(true);
     try {
       const docRef = doc(db, 'Logs', user.uid);
@@ -149,8 +159,6 @@ export const FireStoreProvider = (props: FireStoreProviderProps) => {
 
       const docSnap = await getDoc(docRef);
       let x = docSnap.data() as { Logs: Log[] } | null;
-
-      console.log(JSON.stringify(x));
 
       if (!x) {
         return null;

@@ -17,12 +17,14 @@ const Logs = () => {
 
   const [refreshing, setRefreshing] = useState(false);
 
-  const initData = async () => {
+  const initData = async (refresh: boolean = false) => {
     if (!user) {
       return;
     }
 
-    await getLogs(user!);
+    if (refresh || !logs) {
+      await getLogs(user!);
+    }
   };
 
   const backgroundColor = {
@@ -32,13 +34,18 @@ const Logs = () => {
   const onRefresh = React.useCallback(async () => {
     console.log('refreshing');
     setRefreshing(true);
-    await initData();
+
+    await initData(true);
     setTimeout(() => {
       setRefreshing(false);
     }, 2000);
   }, []);
 
   useEffect(() => {
+    if (!isFocused) {
+      return;
+    }
+
     initData();
   }, [isFocused]);
 

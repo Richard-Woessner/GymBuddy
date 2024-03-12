@@ -2,6 +2,7 @@ import { Animated, FlatList, SafeAreaView, StyleSheet } from 'react-native';
 
 import Loading from '@components/Loading';
 import StartWorkoutCard from '@components/home/StartWorkoutCard';
+import { logWithFileName } from '@helpers/consoleLogTools';
 import { useIsFocused } from '@react-navigation/native';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
@@ -15,6 +16,7 @@ import { useFireStore } from '../../providers/fireStoreProvider';
 export default function TabOneScreen() {
   const fireStoreProverder = useFireStore();
   const { isLoading, workouts } = fireStoreProverder;
+  const _FILE = 'index.tsx';
 
   const authProvider = useAuth();
   const { data } = useLocalSearchParams();
@@ -32,7 +34,7 @@ export default function TabOneScreen() {
 
   const initData = async () => {
     if (!user) {
-      console.log('no user');
+      logWithFileName(_FILE, 'no user');
       const u = await getAuth();
 
       if (!u) {
@@ -40,17 +42,17 @@ export default function TabOneScreen() {
       }
     }
 
-    if (!workouts) {
+    if (!workouts && user) {
       await fireStoreProverder.getWorkouts(user!);
     }
   };
 
   useEffect(() => {
-    if (!isFocused || workouts) {
+    if (!isFocused) {
       return;
     }
 
-    console.log('home useEffect');
+    logWithFileName(_FILE, 'useEffect');
 
     if (data) {
       const u = JSON.parse(data as string);
