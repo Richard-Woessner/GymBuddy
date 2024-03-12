@@ -3,6 +3,7 @@ import { Image, Pressable, StyleSheet, TextInput } from 'react-native';
 import Button from '@components/Button';
 import { Text, View } from '@components/Themed';
 import { Ionicons } from '@expo/vector-icons';
+import { logWithFileName as LOG } from '@helpers/consoleLogTools';
 import { useIsFocused } from '@react-navigation/native';
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
@@ -10,6 +11,8 @@ import { useAuth } from '../../providers/authProvider';
 
 export default function Profile() {
   const authProvider = useAuth();
+  const _FILE = 'profile.tsx';
+
   const { user } = authProvider;
   const [edit, setEdit] = useState(false);
   const [open, setOpen] = useState(false);
@@ -17,22 +20,24 @@ export default function Profile() {
   const isFocused = useIsFocused();
 
   const openSignup = () => {
-    console.log('openSignup');
+    LOG(_FILE, 'openSignup');
 
     setOpen(true);
     router.push({ pathname: `/signup`, params: { id: 2 } });
   };
 
   const openLogin = () => {
-    console.log('openLogin');
+    LOG(_FILE, 'openLogin');
 
     setOpen(true);
     router.push({ pathname: `/login`, params: { id: 2 } });
   };
 
   useMemo(() => {
+    if (!isFocused) return;
+
     if (user) {
-      console.log(user);
+      LOG(_FILE, user);
     }
   }, [user, isFocused]);
 
