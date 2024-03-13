@@ -71,12 +71,12 @@ export default function Profile() {
                 openSignup();
               }}
             />
+            <Ionicons name="logo-google" size={38} color="white" />
           </>
         ) : (
           <Button buttonText="Logout" onPress={() => authProvider.logOff()} />
         )}
       </View>
-      <Ionicons name="logo-google" size={38} color="white" />
     </View>
   );
 }
