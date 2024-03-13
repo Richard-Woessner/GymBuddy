@@ -13,13 +13,14 @@ const SignUpPage = () => {
   const { id } = useLocalSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
 
   const initData = async () => {};
 
   const signUp = async () => {
     console.log('signUp');
 
-    const user = await authProvider.createUser(email, password);
+    const user = await authProvider.createUser(email, password, name);
 
     await authProvider.setUser(user);
 
@@ -45,6 +46,8 @@ const SignUpPage = () => {
         <View style={styles.textInputs}>
           <TextInput onChangeText={(e) => setEmail(e)} style={styles.textInput} />
           <TextInput onChangeText={(e) => setPassword(e)} style={styles.textInput} />
+          <TextInput onChangeText={(e) => setName(e)} style={styles.textInput} />
+
           <TouchableOpacity style={styles.optionButton} onPress={signUp}>
             <Text>Sign Up</Text>
           </TouchableOpacity>

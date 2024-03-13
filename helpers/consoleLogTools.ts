@@ -12,19 +12,32 @@ export const logWithFileName = (fileName: string, message: string | object) => {
 };
 
 export const getNumberFromString = (str: string): string | undefined => {
-  const hash = hashString(str);
-  const arr = hash.toString().split('');
-  arr.shift();
+  try {
+    const hash = hashString(str);
+    const arr = hash.toString().split('');
+    arr.shift();
 
-  return arr.find((num) => parseInt(num) <= 7);
+    return arr.find((num) => parseInt(num) <= 7);
+  } catch (error) {
+    console.error('getNumberFromString', error);
+    return '3';
+  }
 };
-export const shortenObjectProperties = (obj: { [key: string]: any }, maxLength: number): object => {
+export const shortenObjectProperties = (
+  obj: { [key: string]: any },
+  maxLength: number,
+  depth = 0
+): object => {
+  if (depth > 3) {
+    return obj;
+  }
+
   const newObj = { ...obj };
   for (const key in newObj) {
     if (typeof newObj[key] === 'string') {
       newObj[key] = shortenString(newObj[key], maxLength);
     } else if (typeof newObj[key] === 'object') {
-      newObj[key] = shortenObjectProperties(newObj[key], maxLength);
+      newObj[key] = shortenObjectProperties(newObj[key], maxLength, depth + 1);
     }
   }
   return newObj;

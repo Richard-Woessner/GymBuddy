@@ -1,5 +1,10 @@
 import { getData, removeData, storeData } from '@helpers/asyncStorage';
-import { User, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import {
+  User,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from 'firebase/auth';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { auth } from '../firebaseConfig';
 
@@ -9,7 +14,7 @@ interface AuthContextType {
 
   setUser: (user: User | null) => void;
   getAuth: () => Promise<User | null>;
-  createUser: (email: string, password: string) => Promise<User | null>;
+  createUser: (email: string, password: string, name: string | undefined) => Promise<User | null>;
   login: (email: string, password: string) => Promise<User | null>;
   logOff: () => void;
 }
@@ -23,7 +28,11 @@ const initialValues: AuthContextType = {
     throw new Error('Function not implemented.');
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  createUser: function (email: string, password: string): Promise<User | null> {
+  createUser: function (
+    email: string,
+    password: string,
+    name: string | undefined
+  ): Promise<User | null> {
     throw new Error('Function not implemented.');
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -89,30 +98,39 @@ export const AuthProvider = (props: AuthProviderProps) => {
     }
   }, []);
 
-  const createUser = useCallback(async (email: string, password: string): Promise<User | null> => {
-    console.log('authProvider: createUser');
-    setIsLoading(true);
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+  const createUser = useCallback(
+    async (email: string, password: string, name: string | undefined): Promise<User | null> => {
+      console.log('authProvider: createUser');
+      setIsLoading(true);
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 
-      // Signed up
-      const u = userCredential.user;
+        if (name) {
+          updateProfile(userCredential.user, {
+            displayName: name,
+          });
+        }
 
-      setUser(u);
-      console.log(u);
+        // Signed up
+        const u = userCredential.user;
 
-      return u;
-    } catch (e: any) {
-      const errorCode = e.code;
-      const errorMessage = e.message;
+        setUser(u);
+        console.log(u);
 
-      console.log(errorCode);
-      console.error(errorMessage);
-      return null;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+        return u;
+      } catch (e: any) {
+        const errorCode = e.code;
+        const errorMessage = e.message;
+
+        console.log(errorCode);
+        console.error(errorMessage);
+        return null;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
 
   const login = useCallback(async (email: string, password: string): Promise<User | null> => {
     console.log('authProvider: login');
