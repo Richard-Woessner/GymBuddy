@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { logWithFileName as LOG } from '@helpers/consoleLogTools';
 import { useIsFocused } from '@react-navigation/native';
 import { router } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../../providers/authProvider';
 
 export default function Profile() {
@@ -33,18 +33,18 @@ export default function Profile() {
     router.push({ pathname: `/login`, params: { id: 2 } });
   };
 
-  useMemo(() => {
+  useEffect(() => {
     if (!isFocused) return;
 
     if (user) {
       LOG(_FILE, user);
     }
-  }, [user, isFocused]);
+  }, [isFocused]);
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>{user?.email ?? ''}</Text>
+        <Text style={styles.title}>{user?.displayName ?? user?.email ?? ''}</Text>
         <Pressable
           onPress={() => {
             setEdit(!edit);
