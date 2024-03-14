@@ -1,5 +1,5 @@
 import Loading from '@components/Loading';
-import { Log } from '@models/Logs';
+import { Log, logDateToDate } from '@models/Logs';
 import { useIsFocused } from '@react-navigation/native';
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
@@ -49,13 +49,13 @@ const Logs = () => {
     initData();
   }, [isFocused]);
 
-  useEffect(() => {
-    console.log('logs', logs);
-  }, [logs]);
-
   const LogView = (props: { log: Log }) => {
     const { log } = props;
     const key = hashObject(log);
+
+    if (!log.date) {
+      return;
+    }
 
     return (
       <SafeAreaView>
@@ -69,7 +69,7 @@ const Logs = () => {
                 <Text>{`Total Weight: ${exercise.totalWeight || '-'}`}</Text>
               </View>
             ))}
-          <Text style={styles.date}>{dayjs(log.date.nanoseconds).format('MMM-DD hh:mm a')}</Text>
+          <Text style={styles.date}>{dayjs(logDateToDate(log.date)).format('MMM-DD hh:mm a')}</Text>
         </View>
       </SafeAreaView>
     );

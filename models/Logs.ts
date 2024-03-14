@@ -1,9 +1,9 @@
 export interface Log {
-  date: Date;
-  exercises: Exercise[];
+  date: LogDate;
+  exercises: LogExercise[];
 }
 
-interface Exercise {
+export interface LogExercise {
   totalWeight: number;
   exerciseName: string;
   totalReps: number;
@@ -17,7 +17,19 @@ interface LogSet {
   weight: number;
 }
 
-interface Date {
+interface LogDate {
   seconds: number;
   nanoseconds: number;
 }
+
+export const getLogDate = (): LogDate => {
+  const d = new Date();
+  return {
+    seconds: d.getTime() / 1000,
+    nanoseconds: d.getTime() * 1000000,
+  };
+};
+
+export const logDateToDate = (logDate: LogDate): Date => {
+  return new Date(logDate.seconds * 1000);
+};

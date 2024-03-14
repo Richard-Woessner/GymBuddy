@@ -1,6 +1,7 @@
 import Button from '@components/Button';
 import { deepCopy, generateRandomString, hashObject } from '@helpers/func';
-import { CompletedWorkout, Exercise, Exercise as SessionExercise } from '@models/CompletedWorkout';
+
+import { Log, LogExercise, getLogDate } from '@models/Logs';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Alert, StyleSheet } from 'react-native';
@@ -8,7 +9,7 @@ import ExerciseCard from '../components/ExerciseCard';
 import { Text, View } from '../components/Themed';
 import { useAuth } from '../providers/authProvider';
 import { useFireStore } from '../providers/fireStoreProvider';
-import { Workout } from '../services/workoutService';
+import { Exercise, Workout } from '../services/workoutService';
 
 /**
  * Represents the WorkoutPage component.
@@ -39,13 +40,13 @@ const WorkoutPage = () => {
       return;
     }
 
-    let tempSession: CompletedWorkout = {
-      date: new Date(),
+    let tempSession: Log = {
+      date: getLogDate(),
       exercises: [],
     };
 
     tempWorkout.Exercises.forEach((exercise) => {
-      const tempExercise: SessionExercise = {
+      const tempExercise: LogExercise = {
         exerciseName: exercise.Exercise,
         sets: [],
         totalReps: 0,

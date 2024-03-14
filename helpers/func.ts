@@ -5,6 +5,10 @@ export const hashString = (s: string): number => {
   }, 0);
 };
 
+export const isValidNumber = (s: string): boolean => {
+  return !isNaN(Number(s));
+};
+
 export const hashObject = (o: any): number => {
   return hashString(JSON.stringify(o));
 };
