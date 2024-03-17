@@ -1,12 +1,13 @@
 import { getData, removeData, storeData } from '@helpers/asyncStorage';
+import User, { UserData, createNewUser } from '@models/User';
 import {
-  User,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
 } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
-import { auth } from '../firebaseConfig';
+import { auth, db } from '../firebaseConfig';
 
 interface AuthContextType {
   isLoading: boolean;
@@ -114,10 +115,17 @@ export const AuthProvider = (props: AuthProviderProps) => {
         // Signed up
         const u = userCredential.user;
 
-        setUser(u);
-        console.log(u);
+        const newUserData = createNewUser(u);
 
-        return u;
+        if (newUserData.data) {
+          newUserData.data.uid = u.uid;
+        }
+
+        setUser(newUserData);
+
+        await setDoc(doc(db, 'Users', u.uid), newUserData.data);
+
+        return newUserData;
       } catch (e: any) {
         const errorCode = e.code;
         const errorMessage = e.message;
@@ -137,8 +145,20 @@ export const AuthProvider = (props: AuthProviderProps) => {
     setIsLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      // Logged in
       const u = userCredential.user;
+
+      const userDocRef = doc(db, 'Users', u.uid);
+      const userDocSnap = await getDoc(userDocRef);
+      if (userDocSnap.exists()) {
+        const userData = userDocSnap.data() as UserData;
+
+        if (userData) {
+          const newUser: User = { ...u, data: userData };
+          setUser(newUser);
+          return newUser;
+        }
+      }
+
       setUser(u);
       return u;
     } catch (e: any) {
@@ -155,6 +175,12 @@ export const AuthProvider = (props: AuthProviderProps) => {
   const logOff = () => {
     setUser(null);
   };
+
+  useMemo(() => {
+    if (!user) {
+      getAuth();
+    }
+  }, []);
 
   const values = useMemo(
     () => ({
