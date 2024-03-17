@@ -44,6 +44,11 @@ export default function TabOneScreen() {
 
     if (!workouts && user) {
       await fireStoreProverder.getWorkouts(user!);
+      const t = await fireStoreProverder.getTrainer(user!);
+
+      if (t) {
+        setUser({ ...user, data: { ...user.data!, trainerUid: t.uid! } });
+      }
     }
   };
 

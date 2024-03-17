@@ -1,31 +1,88 @@
-import React, { useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import Loading from '@components/Loading';
+import { hashObject } from '@helpers/func';
+import { Conversation, Message } from '@models/Messages';
+import { doc, onSnapshot } from 'firebase/firestore';
+import React, { useMemo, useState } from 'react';
+import { FlatList, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { Text, View } from '../../components/Themed';
+import { db } from '../../firebaseConfig';
+import { useAuth } from '../../providers/authProvider';
+import { useFireStore } from '../../providers/fireStoreProvider';
 
 export default function Profile() {
-  const [messages, setMessages] = useState<string[]>([]);
+  const fire = useFireStore();
+  const { conversation } = fire;
+  const authProvider = useAuth();
+  const _FILE = 'profile.tsx';
+
+  const { user } = authProvider;
   const [text, setText] = useState<string>('');
+  const [messages, setMessages] = useState<Message[]>(conversation?.messages ?? []);
+
+  const init = async () => {
+    if (!conversation) {
+      const c = await fire.getMessages(authProvider.user!);
+      setMessages([...c!.messages!]);
+      return;
+    }
+
+    setMessages([...conversation?.messages!]);
+  };
 
   const handleSend = () => {
     if (text.trim() !== '') {
-      setMessages([...messages, text]);
       setText('');
+      fire.sendMessage(text, authProvider.user!, [fire.trainer?.uid!, user?.uid!]);
     }
   };
+
+  const ChatBubble = ({ message }: { message: Message }) => {
+    const userSent = message.senderUid === authProvider.user?.uid;
+
+    if (userSent) {
+      return (
+        <View style={styles.chatBubble}>
+          <Text>{message.message}</Text>
+        </View>
+      );
+    } else {
+      return (
+        <View style={styles.chatBubbleLeft}>
+          <Text style={styles.blackText}>{message.message}</Text>
+        </View>
+      );
+    }
+  };
+
+  useMemo(() => {
+    init();
+  }, []);
+
+  useMemo(() => {
+    if (conversation?.id) {
+      onSnapshot(doc(db, 'Messages', conversation.id!), (doc) => {
+        console.log(`Conversation updated at ${new Date().toString()}`);
+        setMessages([...(doc.data()!.messages as Message[])]);
+        return doc.data() as Conversation;
+      });
+    }
+  }, []);
+
+  if (!user || !messages || !conversation) {
+    return <Loading />;
+  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Messages</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
 
-      {/* Display Messages */}
-      <ScrollView style={styles.messageContainer}>
-        {messages.map((message, index) => (
-          <Text key={index} style={styles.messageText}>
-            {message}
-          </Text>
-        ))}
-      </ScrollView>
+      <FlatList
+        style={styles.messageContainer}
+        data={messages}
+        keyExtractor={(message) => hashObject(message).toString()}
+        renderItem={({ item }) => <ChatBubble message={item} />}
+      />
 
       {/* Input for typing messages */}
       <View style={styles.inputContainer}>
@@ -94,5 +151,28 @@ const styles = StyleSheet.create({
   },
   sendButtonText: {
     color: 'white',
+  },
+  chatBubble: {
+    backgroundColor: 'blue',
+    padding: 10,
+    borderRadius: 20,
+    maxWidth: '80%',
+    marginBottom: 10,
+    alignSelf: 'flex-end',
+  },
+  chatBubbleLeft: {
+    backgroundColor: 'white',
+    color: 'black',
+    padding: 10,
+    borderRadius: 20,
+    marginBottom: 10,
+    maxWidth: '80%',
+    alignSelf: 'flex-start',
+  },
+  chatBubbleText: {
+    color: 'white',
+  },
+  blackText: {
+    color: 'black',
   },
 });
