@@ -47,7 +47,7 @@ export default function Profile() {
           <Button
             buttonText={'Find a trainer now'}
             onPress={() => {
-              fire.setUsersTrainer(user, trainerCode);
+              fire.setUsersTrainer(user!, trainerCode);
             }}
           />
         </>

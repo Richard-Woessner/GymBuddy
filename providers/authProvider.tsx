@@ -81,10 +81,16 @@ export const AuthProvider = (props: AuthProviderProps) => {
     }
 
     try {
-      const u = await getData<User>('user');
+      let u = await getData<User>('user');
       console.log('User found in storage: ', u);
 
       if (u) {
+        const uData = await getUserDoc(u.uid);
+
+        if (uData) {
+          u.data = uData;
+        }
+
         setUser(u);
         return u;
       } else {
@@ -176,8 +182,26 @@ export const AuthProvider = (props: AuthProviderProps) => {
     setUser(null);
   };
 
+  const getUserDoc = useCallback(async (uid: string): Promise<UserData | null> => {
+    try {
+      const userDocRef = doc(db, 'Users', uid);
+      const userDocSnap = await getDoc(userDocRef);
+      if (userDocSnap.exists()) {
+        const userData = userDocSnap.data() as UserData;
+        return userData;
+      } else {
+        console.log('User document not found');
+        return null;
+      }
+    } catch (e) {
+      console.error('Error getting user document:', e);
+      return null;
+    }
+  }, []);
+
   useMemo(() => {
     if (!user) {
+      console.log('\x1b[31m', 'get auth');
       getAuth();
     }
   }, []);
