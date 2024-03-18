@@ -3,10 +3,21 @@ import { generateRandomString } from '@helpers/func';
 import { Log, getLogDate } from '@models/Logs';
 import { Conversation } from '@models/Messages';
 import User, { UserData } from '@models/User';
-import { collection, doc, getDoc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import {
+  CollectionReference,
+  DocumentData,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  setDoc,
+  where,
+} from 'firebase/firestore';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { db } from '../firebaseConfig';
 import { Workout } from '../services/workoutService';
+import { useAuth } from './authProvider';
 
 const _FILE = 'fireStoreProvider.tsx';
 
@@ -79,6 +90,7 @@ export interface FireStoreProviderProps {
 }
 
 export const FireStoreProvider = (props: FireStoreProviderProps) => {
+  const auth = useAuth();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [workouts, setWorkouts] = useState<Workout[] | null>(null);
@@ -237,7 +249,15 @@ export const FireStoreProvider = (props: FireStoreProviderProps) => {
         return null;
       }
 
-      const newTrainer = querySnapshot.docs[0].data() as Trainer;
+      let newTrainer = querySnapshot.docs[0].data() as Trainer;
+
+      if (!newTrainer.clients) {
+        newTrainer.clients = [];
+      }
+
+      newTrainer.clients.push(user.uid);
+
+      await setDoc(doc(db, 'Trainers', newTrainer.uid), newTrainer);
 
       logWithFileName(_FILE, `found ${querySnapshot.size} trainers`);
 
@@ -248,6 +268,8 @@ export const FireStoreProvider = (props: FireStoreProviderProps) => {
       };
 
       const docRef = await setDoc(doc(db, 'Users', user.uid), newUserData, { merge: true });
+
+      auth.setUser({ ...user, data: newUserData });
 
       setTrainer(newTrainer);
 
@@ -354,7 +376,8 @@ export const FireStoreProvider = (props: FireStoreProviderProps) => {
       const querySnapshot = await getDocs(q);
       if (querySnapshot.size === 0) {
         logWithFileName(_FILE, `No conversations found for user ${user.uid}`);
-        return null;
+
+        sendMessage('Hello', user, [user.uid]);
       }
       const conversations = querySnapshot.docs.map((doc) => doc.data() as Conversation);
 
@@ -467,3 +490,9 @@ const initWorkout = {
     },
   ],
 };
+function addDoc(
+  arg0: CollectionReference<DocumentData, DocumentData>,
+  newConversation: Conversation
+) {
+  throw new Error('Function not implemented.');
+}

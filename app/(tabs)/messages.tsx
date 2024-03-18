@@ -2,7 +2,7 @@ import Loading from '@components/Loading';
 import { hashObject } from '@helpers/func';
 import { Conversation, Message } from '@models/Messages';
 import { doc, onSnapshot } from 'firebase/firestore';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import { db } from '../../firebaseConfig';
@@ -32,6 +32,10 @@ export default function Profile() {
   const handleSend = () => {
     if (text.trim() !== '') {
       setText('');
+      setMessages([
+        ...messages,
+        { message: text, senderUid: authProvider.user!.uid, timestamp: new Date() },
+      ]);
       fire.sendMessage(text, authProvider.user!, [fire.trainer?.uid!, user?.uid!]);
     }
   };
@@ -58,7 +62,7 @@ export default function Profile() {
     init();
   }, []);
 
-  useMemo(() => {
+  useEffect(() => {
     if (conversation?.id) {
       onSnapshot(doc(db, 'Messages', conversation.id!), (doc) => {
         console.log(`Conversation updated at ${new Date().toString()}`);
@@ -134,6 +138,7 @@ const styles = StyleSheet.create({
     width: '100%',
     position: 'absolute',
     bottom: 0,
+    color: 'white',
   },
   input: {
     flex: 1,
@@ -142,6 +147,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 20,
+    color: 'white',
   },
   sendButton: {
     backgroundColor: 'blue',

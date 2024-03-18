@@ -5,4 +5,5 @@ interface Trainer {
   age: number;
   specialization: string;
   experience: number;
+  clients?: string[];
 }
