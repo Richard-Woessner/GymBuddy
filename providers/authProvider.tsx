@@ -125,6 +125,7 @@ export const AuthProvider = (props: AuthProviderProps) => {
 
         if (newUserData.data) {
           newUserData.data.uid = u.uid;
+          newUserData.data.name = name ?? email.split('@')[0];
         }
 
         setUser(newUserData);
