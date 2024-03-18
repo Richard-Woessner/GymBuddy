@@ -64,11 +64,15 @@ export default function Profile() {
 
   useEffect(() => {
     if (conversation?.id) {
-      onSnapshot(doc(db, 'Messages', conversation.id!), (doc) => {
+      const unsubscribe = onSnapshot(doc(db, 'Messages', conversation.id!), (doc) => {
         console.log(`Conversation updated at ${new Date().toString()}`);
         setMessages([...(doc.data()!.messages as Message[])]);
         return doc.data() as Conversation;
       });
+
+      return () => {
+        unsubscribe();
+      };
     }
   }, []);
 

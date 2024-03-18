@@ -35,7 +35,7 @@ interface FireStoreContextType {
   postLog: (log: any, user: User) => Promise<boolean>;
   setUsersTrainer: (user: User, trainerCode: string) => Promise<any>;
   getTrainer: (user: User) => Promise<Trainer | null>;
-  sendMessage: (message: string, user: User, userIds: string[]) => Promise<boolean>;
+  sendMessage: (message: string, user: User, userIds: string[]) => Promise<Conversation | false>;
   getMessages: (user: User) => Promise<Conversation | null>;
 }
 
@@ -74,7 +74,11 @@ const initialValues: FireStoreContextType = {
     throw new Error('Function not implemented.');
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  sendMessage: function (message: string, user: User, userIds: string[]): Promise<boolean> {
+  sendMessage: function (
+    message: string,
+    user: User,
+    userIds: string[]
+  ): Promise<Conversation | false> {
     throw new Error('Function not implemented.');
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -314,7 +318,7 @@ export const FireStoreProvider = (props: FireStoreProviderProps) => {
   }, []);
 
   const sendMessage = useCallback(
-    async (message: string, user: User, userIds: string[]): Promise<boolean> => {
+    async (message: string, user: User, userIds: string[]): Promise<Conversation | false> => {
       console.log('fireStoreProvider: sendMessage');
       setIsLoading(true);
       try {
@@ -329,13 +333,23 @@ export const FireStoreProvider = (props: FireStoreProviderProps) => {
         if (querySnapshot.size === 0) {
           logWithFileName(_FILE, `No conversation found for user ${user.uid}`);
 
-          await setDoc(doc(db, 'Messages', generateRandomString(19)), {
+          const docRef = generateRandomString(19);
+
+          await setDoc(doc(db, 'Messages', docRef), {
             userUids: [user.uid],
             messages: [{ message, senderUid: user.uid, timestamp: new Date() }],
             createdAt: new Date(),
           } as Conversation);
 
-          return false;
+          const u: Conversation = {
+            id: docRef,
+            userUids: [user.uid],
+            messages: [{ message, senderUid: user.uid, timestamp: new Date() }],
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          };
+
+          return u;
         }
 
         const c = querySnapshot.docs[0];
@@ -356,7 +370,7 @@ export const FireStoreProvider = (props: FireStoreProviderProps) => {
 
         //setConversation(temp);
 
-        return true;
+        return temp;
       } catch (e: any) {
         console.log('Error at sendMessage:');
         console.log(e);
@@ -377,7 +391,15 @@ export const FireStoreProvider = (props: FireStoreProviderProps) => {
       if (querySnapshot.size === 0) {
         logWithFileName(_FILE, `No conversations found for user ${user.uid}`);
 
-        sendMessage('Hello', user, [user.uid]);
+        const c = await sendMessage('Hello', user, [user.uid]);
+
+        if (!c) {
+          return null;
+        }
+
+        setConversation(c!);
+
+        return c;
       }
       const conversations = querySnapshot.docs.map((doc) => doc.data() as Conversation);
 
