@@ -5,6 +5,7 @@ interface User extends FirebaseUser {
 }
 
 interface UserData {
+  name: string;
   uid: string; // User ID
   trainerUid?: string; // Trainer ID
   age?: number;
