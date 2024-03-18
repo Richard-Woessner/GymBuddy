@@ -124,6 +124,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     padding: 10,
+    marginBottom: 65,
   },
   messageText: {
     fontSize: 16,
