@@ -1,10 +1,11 @@
 import { Animated, FlatList, SafeAreaView, StyleSheet } from 'react-native';
 
+import Button from '@components/Button';
 import Loading from '@components/Loading';
 import StartWorkoutCard from '@components/home/StartWorkoutCard';
 import { logWithFileName } from '@helpers/consoleLogTools';
 import { useIsFocused } from '@react-navigation/native';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Text, View } from '../../components/Themed';
 import { HomeWorkoutCard } from '../../components/home/HomeWorkoutCard';
@@ -74,6 +75,13 @@ export default function TabOneScreen() {
     <SafeAreaView>
       <View style={styles.container}>
         <Text style={styles.title}>Home</Text>
+
+        <Button
+          buttonText="Create Workout"
+          onPress={() => {
+            router.push({ pathname: `/create-workout`, params: { id: 2 } });
+          }}
+        />
 
         {workouts.length === 0 && <Text>No workouts found</Text>}
 

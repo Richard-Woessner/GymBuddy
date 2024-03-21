@@ -5,9 +5,9 @@
 
 import {
   Text as DefaultText,
-  useColorScheme,
-  View as DefaultView,
   TextInput as DefaultTextInput,
+  View as DefaultView,
+  useColorScheme,
 } from 'react-native';
 
 import Colors from '../constants/Colors';
@@ -60,5 +60,5 @@ export function TextInput(props: TextInputProps) {
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
   const borderColor = useThemeColor({ light: lightColor, dark: darkColor }, 'tabIconSelected');
 
-  return <DefaultTextInput style={[{ color, borderColor }, style]} {...otherProps} />;
+  return <DefaultTextInput style={[{ color, borderColor: borderColor }, style]} {...otherProps} />;
 }
