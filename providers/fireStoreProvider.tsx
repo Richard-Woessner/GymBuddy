@@ -14,7 +14,7 @@ import {
   setDoc,
   where,
 } from 'firebase/firestore';
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { db } from '../firebaseConfig';
 import { Workout } from '../services/workoutService';
 import { useAuth } from './authProvider';
@@ -30,6 +30,7 @@ interface FireStoreContextType {
 
   createWorkout: (user: User) => Promise<any>;
   getWorkouts: (user: User) => Promise<Workout[] | null>;
+  addWorkout: (newWorkout: Workout, workouts: Workout[], user: User) => Promise<any>;
   deleteWorkout: (workout: Workout, user: User) => Promise<boolean>;
   getLogs: (user: User) => Promise<Log[] | null>;
   postLog: (log: any, user: User) => Promise<boolean>;
@@ -54,6 +55,11 @@ const initialValues: FireStoreContextType = {
   getWorkouts: function (user: User): Promise<any> {
     throw new Error('Function not implemented.');
   },
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  addWorkout: function (newWorkout: Workout, workouts: Workout[], user: User): Promise<any> {
+    throw new Error('Function not implemented.');
+  },
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   deleteWorkout: function (workout: Workout, user: User): Promise<boolean> {
     throw new Error('Function not implemented.');
   },
@@ -165,6 +171,46 @@ export const FireStoreProvider = (props: FireStoreProviderProps) => {
     }
   }, []);
 
+  const addWorkout = useCallback(
+    async (newWorkout: Workout, workouts: Workout[], user: User): Promise<any> => {
+      console.log('fireStoreProvider: addWorkout');
+      setIsLoading(true);
+      try {
+        if (!user) {
+          console.log('Add workout: No user');
+          return null;
+        }
+        if (!newWorkout) {
+          console.log('Add workout: No workout');
+          return null;
+        }
+        if (!workouts) {
+          console.log('Add workout: No workouts');
+          return null;
+        }
+
+        const docRef = doc(db, 'Workouts', user.uid);
+
+        const data = { User: 'User', uid: user.uid, Workouts: [...workouts, newWorkout] };
+
+        await setDoc(docRef, data);
+
+        setWorkouts([...workouts!, newWorkout]);
+        return docRef;
+      } catch (e: any) {
+        console.error(e);
+        return null;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
+
+  useEffect(() => {
+    console.log(workouts);
+  }, [workouts]);
+
   const deleteWorkout = useCallback(async (workout: Workout, user: User): Promise<boolean> => {
     console.log('fireStoreProvider: deleteWorkout');
     setIsLoading(true);
@@ -184,7 +230,6 @@ export const FireStoreProvider = (props: FireStoreProviderProps) => {
       });
 
       setWorkouts(updatedWorkouts);
-
       return true;
     } catch (e: any) {
       console.log(e);
@@ -269,6 +314,7 @@ export const FireStoreProvider = (props: FireStoreProviderProps) => {
         ...user.data,
         trainerUid: newTrainer.uid,
         uid: user.uid,
+        name: user.displayName ?? user.email?.split('@')[0] ?? 'User',
       };
 
       const docRef = await setDoc(doc(db, 'Users', user.uid), newUserData, { merge: true });
@@ -424,6 +470,7 @@ export const FireStoreProvider = (props: FireStoreProviderProps) => {
 
       createWorkout,
       getWorkouts,
+      addWorkout,
       deleteWorkout,
       getLogs,
       postLog,
@@ -432,7 +479,7 @@ export const FireStoreProvider = (props: FireStoreProviderProps) => {
       sendMessage,
       getMessages,
     }),
-    [isLoading, workouts, logs]
+    [isLoading, workouts, logs, trainer, conversation]
   );
 
   return <FireStoreContext.Provider value={values}>{props.children}</FireStoreContext.Provider>;
