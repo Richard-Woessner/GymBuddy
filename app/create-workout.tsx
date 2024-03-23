@@ -1,8 +1,9 @@
 import Button from '@components/Button';
 import { Text, TextInput } from '@components/Themed';
 import { Ionicons } from '@expo/vector-icons';
-import { generateRandomString } from '@helpers/func';
+import { generateRandomString, hashObject } from '@helpers/func';
 import { Exercise, Set, Workout } from '@models/Workout';
+import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useAuth } from '../providers/authProvider';
@@ -10,7 +11,9 @@ import { useFireStore } from '../providers/fireStoreProvider';
 
 const CreateWorkoutPage = () => {
   const authProvider = useAuth();
-  const fireStoreProvider = useFireStore();
+  const { user } = authProvider;
+  const fs = useFireStore();
+
   const [workout, setWorkout] = useState<Workout>({
     Name: '',
     Id: generateRandomString(16),
@@ -79,9 +82,52 @@ const CreateWorkoutPage = () => {
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Handle submitting the workout data
-    console.log(workout);
+    console.log(user);
+    const workouts = fs.workouts;
+
+    if (!user || !workouts) {
+      return;
+    }
+
+    // Validate workout name
+    if (!workout.Name) {
+      alert('Please enter a workout name');
+      return;
+    }
+
+    // Validate exercise names
+    for (const exercise of workout.Exercises) {
+      if (!exercise.Exercise) {
+        alert('Please enter an exercise name');
+        return;
+      }
+    }
+
+    // Validate set values
+    for (const exercise of workout.Exercises) {
+      for (const set of exercise.Sets) {
+        if (isNaN(set.Reps) || isNaN(set.Weight)) {
+          alert('Please enter valid set values');
+          return;
+        }
+
+        if (set.Reps <= 0 || set.Weight <= 0) {
+          alert('Please enter valid set values');
+          return;
+        }
+      }
+    }
+
+    // Proceed with submitting the workout data
+    const resp = await fs.addWorkout(workout, workouts, user);
+    if (resp) {
+      alert('Workout Created');
+      router.back();
+    }
+
+    router.back();
   };
 
   const initData = async () => {};
@@ -114,7 +160,7 @@ const CreateWorkoutPage = () => {
               onChangeText={(text) =>
                 handleExerciseChange(exerciseIndex, { ...exercise, Exercise: text })
               }
-              style={styles.textInput}
+              style={styles.headerInput}
             />
           </View>
           <View style={styles.exersizeContainerBody}>
@@ -133,6 +179,7 @@ const CreateWorkoutPage = () => {
                   <Text style={styles.setsHeader}>Reps</Text>
                   {exercise.Sets.map((set, setIndex) => (
                     <TextInput
+                      key={hashObject({ exerciseIndex, setIndex })}
                       value={set.Reps.toString()}
                       onChangeText={(text) =>
                         handleSetChange(exerciseIndex, setIndex, { ...set, Reps: parseInt(text) })
@@ -145,6 +192,7 @@ const CreateWorkoutPage = () => {
                   <Text style={styles.setsHeader}>Weight</Text>
                   {exercise.Sets.map((set, setIndex) => (
                     <TextInput
+                      key={hashObject({ exerciseIndex, setIndex })}
                       value={set.Weight.toString()}
                       onChangeText={(text) =>
                         handleSetChange(exerciseIndex, setIndex, { ...set, Weight: parseInt(text) })
@@ -215,6 +263,12 @@ const styles = StyleSheet.create({
     gap: 20,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  headerInput: {
+    padding: 10,
+    borderColor: 'gray',
+    borderWidth: 1,
+    minWidth: 140,
   },
   sets: {
     flexDirection: 'row',
