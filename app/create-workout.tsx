@@ -145,7 +145,7 @@ const CreateWorkoutPage = () => {
           value={workout.Name}
           placeholder="Workout Name"
           onChangeText={(text) => setWorkout({ ...workout, Name: text })}
-          style={styles.textInput}
+          style={styles.headerInput}
         />
       </View>
       <Text></Text>
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderColor: 'gray',
     borderWidth: 1,
-    minWidth: 140,
+    width: 140,
   },
   sets: {
     flexDirection: 'row',
